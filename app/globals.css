@@ -23,3 +23,7 @@
 		@apply bg-light-200 dark:bg-dark-100;
 	}
 }
+
+@utility bg-light200_dark100 {
+	@apply bg-light-200 dark:bg-dark-100;
+}

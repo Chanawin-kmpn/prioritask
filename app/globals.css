@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
 
 @theme {
 	--color-dark-100: var(--color-zinc-900);
@@ -35,6 +35,9 @@
 	@apply bg-dark-100 dark:bg-light-200;
 }
 
-@utility text-dark100_light100 {
-	@apply text-dark-100 dark:text-light-100;
+@utility text-dark100_light200 {
+	@apply text-dark-100 dark:text-light-200;
+}
+@utility text-light200_dark100 {
+	@apply text-light-200 dark:text-dark-100;
 }

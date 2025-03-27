@@ -5,7 +5,7 @@ import Link from 'next/link';
 import UserAvatar from './UserAvatar';
 
 const Navbar = () => {
-	const isLogin = false;
+	const isLogin = true;
 	return (
 		<nav className="bg-light200_dark100 z-50 flex w-full">
 			<div className="flex-1 border-b py-4 pl-16">

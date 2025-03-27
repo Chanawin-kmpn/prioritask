@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-/* @custom-variant dark (&:is(.dark *)); */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
 	--color-dark-100: var(--color-zinc-900);
@@ -40,4 +40,12 @@
 }
 @utility text-light200_dark100 {
 	@apply text-light-200 dark:text-dark-100;
+}
+
+@utility divider {
+	@apply h-[1px] w-full bg-gray-100;
+}
+
+@utility setting-links {
+	@apply text-dark100_light200 block cursor-pointer rounded-md p-2 hover:bg-gray-200 dark:hover:bg-zinc-800;
 }

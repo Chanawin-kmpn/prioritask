@@ -11,7 +11,7 @@ const Navbar = () => {
 			<div className="flex-1 border-b py-4 pl-16">
 				<Link href="/" className="flex items-center">
 					<Image
-						src="/images/prioratask-logo.png"
+						src="/images/prioritask-logo.png"
 						width={250}
 						height={100}
 						alt="Prioritask Logo"

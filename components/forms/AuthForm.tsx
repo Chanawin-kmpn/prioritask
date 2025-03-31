@@ -7,9 +7,9 @@ import {
 	DefaultValues,
 	FieldValue,
 	FieldValues,
+	Path,
 	useForm,
 } from 'react-hook-form';
-import { z, ZodType } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,12 +22,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import SocialAuthForm from './SocialAuthForm';
-// import { createAccount, signInUser } from '@/lib/actions/users.actions';
+import { z, ZodType } from 'zod';
+import { formTitles } from '@/constants';
+import { Label } from '@radix-ui/react-label';
+import { Checkbox } from '../ui/checkbox';
 
 interface AuthFormProps<T extends FieldValues> {
 	schema: ZodType<T>;
 	defaultValues: T;
-	onSubmit: (data: T) => Promise<ActionResponse>;
 	formType: 'SIGN_IN' | 'SIGN_UP';
 }
 
@@ -35,19 +37,23 @@ const AuthForm = <T extends FieldValues>({
 	schema,
 	defaultValues,
 	formType,
-	onSubmit,
 }: AuthFormProps<T>) => {
 	const [isLoading, setIsLoading] = useState(false);
-	const [];
 	const form = useForm<z.infer<typeof schema>>({
 		resolver: zodResolver(schema),
 		defaultValues: defaultValues as DefaultValues<T>,
 	});
 
-	const onSubmit = async (values: z.infer<typeof schema>) => {};
+	const onSubmit = async (values: z.infer<typeof schema>) => {
+		if (formType === 'SIGN_UP') {
+			console.log('Creating account...');
+		}
+	};
+
+	const titleConfig = formTitles[formType];
 
 	return (
-		<div className="flex flex-col items-start justify-center gap-8 px-8">
+		<div className="flex flex-col justify-center gap-8 px-8">
 			<div className="w-full space-y-2">
 				<Image
 					src="/images/prioritask-logo.png"
@@ -57,99 +63,90 @@ const AuthForm = <T extends FieldValues>({
 					className="mx-auto"
 				/>
 
-				<h2 className="text-xl font-bold">Create an account</h2>
-				<p className="text-sm">
-					Already have an account?{' '}
-					<Link href="/sign-in" className="text-blue-600">
-						Log in
-					</Link>
-				</p>
+				<div className="space-x-4">
+					<h2 className="text-3xl font-bold">{titleConfig.heading}</h2>
+					<div className="space-x-4">
+						<p className="inline text-sm">{titleConfig.prompt}</p>
+						<Link
+							href={titleConfig.linkHref}
+							className="text-dark100_light200 text-lg font-bold underline"
+						>
+							{titleConfig.linkText}
+						</Link>
+					</div>
+				</div>
 			</div>
 
 			<div className="divider" />
 
 			<div className="w-full">
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-						<FormField
-							control={form.control}
-							name="name"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Name</FormLabel>
-									<FormControl>
-										<Input placeholder="Enter your name..." {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+						{Object.keys(defaultValues).map((field) => (
+							<FormField
+								key={field}
+								control={form.control}
+								name={field as Path<T>}
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="text-dark100_light200 text-base font-bold">
+											{field.name === 'confirmPassword'
+												? 'Confirm Password'
+												: field.name.charAt(0).toUpperCase() +
+													field.name.slice(1)}
+										</FormLabel>
+										<FormControl>
+											<Input
+												required
+												type={
+													field.name === 'password' ||
+													field.name === 'confirmPassword'
+														? 'password'
+														: 'text'
+												}
+												placeholder={`Enter your ${
+													field.name === 'password' ||
+													field.name === 'confirmPassword'
+														? 'password'
+														: field.name
+												}...`}
+												className=""
+											/>
+										</FormControl>
+										<FormMessage className="shad-form-message" />
+									</FormItem>
+								)}
+							/>
+						))}
+						{formType === 'SIGN_IN' && (
+							<div className="flex items-center justify-between">
+								<div className="space-x-2">
+									<Checkbox id="remember" />
+									<Label htmlFor="remember">Remember me</Label>
+								</div>
+								<Link href="#" className="underline">
+									Forget password
+								</Link>
+							</div>
+						)}
+						<div className="mt-4">
+							<Button
+								type="submit"
+								size="lg"
+								className="text-light-200 bg-dark-100 mb-0 w-full rounded-md py-4 text-base hover:bg-zinc-700"
+								disabled={isLoading}
+							>
+								{titleConfig.submitBtn}
+							</Button>
 
-						<FormField
-							control={form.control}
-							name="email"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Email</FormLabel>
-									<FormControl>
-										<Input placeholder="Enter your email..." {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+							<div className="my-[17px] flex items-center justify-center">
+								<div className="divider"></div>
+								<span className="px-4 text-base text-gray-100">Or</span>
+								<div className="divider"></div>
+							</div>
 
-						<FormField
-							control={form.control}
-							name="password"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Password</FormLabel>
-									<FormControl>
-										<Input
-											type="password"
-											placeholder="Enter your password..."
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
-						<FormField
-							control={form.control}
-							name="confirmPassword"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Confirm password</FormLabel>
-									<FormControl>
-										<Input
-											type="password"
-											placeholder="Enter your password..."
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
-						<Button
-							type="submit"
-							className="w-full rounded-md bg-black py-2 text-white"
-							disabled={isLoading}
-						>
-							Create account
-						</Button>
-
-						<div className="my-4 flex items-center justify-center">
-							<div className="h-px flex-1 bg-gray-300"></div>
-							<span className="px-4 text-sm text-gray-500">Or</span>
-							<div className="h-px flex-1 bg-gray-300"></div>
+							<SocialAuthForm title={titleConfig.oAuthBtn} />
 						</div>
-
-						<SocialAuthForm />
 					</form>
 				</Form>
 			</div>

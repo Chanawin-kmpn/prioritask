@@ -60,9 +60,9 @@ const UserAvatar = ({
 	}, [isOpen]);
 
 	return (
-		<div ref={dropdownRef} className="flex h-full items-center">
+		<div ref={dropdownRef} className="mx-auto flex size-full items-center px-4">
 			<button
-				className="flex cursor-pointer items-center justify-between gap-2"
+				className="flex size-full cursor-pointer items-center justify-between gap-2"
 				onClick={() => setIsOpen(!isOpen)}
 				aria-expanded={isOpen}
 				aria-haspopup="menu"

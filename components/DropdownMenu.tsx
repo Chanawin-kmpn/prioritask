@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import React from 'react';
 import ThemeToggle from './ThemeToggle';
+import { Button } from './ui/button';
 
 const DropdownMenu = ({
 	id,
@@ -39,8 +40,8 @@ const DropdownMenu = ({
 						Dashboard
 					</Link>
 				</li>
-				<li role="menuitem" className="setting-links">
-					<button>Sign out</button>
+				<li role="menuitem">
+					<button className="setting-links w-full text-start">Sign out</button>
 				</li>
 			</ul>
 			<div className="divider" />

@@ -19,7 +19,7 @@ const Navbar = () => {
 					/>
 				</Link>
 			</div>
-			<div className="border-dark-100 dark:border-light-200 bg-light200_dark100 relative flex min-w-[300px] items-center justify-center border-b border-l px-4">
+			<div className="border-dark-100 dark:border-light-200 bg-light200_dark100 relative flex min-w-[300px] items-center justify-center border-b border-l">
 				{isLogin ? (
 					<UserAvatar id={'1'} name={'Chanawin Kamolpanus'} />
 				) : (

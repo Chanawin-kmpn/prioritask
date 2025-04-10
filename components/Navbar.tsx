@@ -5,11 +5,11 @@ import Link from 'next/link';
 import UserAvatar from './UserAvatar';
 
 const Navbar = () => {
-	const isLogin = true;
+	const isLogin = false;
 	return (
 		<nav className="bg-light200_dark100 z-50 flex w-full">
 			<div className="flex-1 border-b py-4 pl-16">
-				<Link href="/" className="flex items-center">
+				<Link href="/" className="flex w-fit items-center">
 					<Image
 						src="/images/prioritask-logo.png"
 						width={250}
@@ -23,7 +23,7 @@ const Navbar = () => {
 				{isLogin ? (
 					<UserAvatar id={'1'} name={'Chanawin Kamolpanus'} />
 				) : (
-					<Link href="/sign-in" className="font-bold tracking-[8px]">
+					<Link href="/sign-in" className="font-bold tracking-[8px] uppercase">
 						Sign In
 					</Link>
 				)}

@@ -110,10 +110,10 @@ const AuthForm = <T extends FieldValues>({
 														? 'password'
 														: field.name
 												}...`}
-												className=""
+												className="bg-light200_dark100 border-gray-300"
 											/>
 										</FormControl>
-										<FormMessage className="shad-form-message" />
+										<FormMessage />
 									</FormItem>
 								)}
 							/>
@@ -121,7 +121,10 @@ const AuthForm = <T extends FieldValues>({
 						{formType === 'SIGN_IN' && (
 							<div className="flex items-center justify-between">
 								<div className="space-x-2">
-									<Checkbox id="remember" />
+									<Checkbox
+										id="remember"
+										className="bg-light200_dark100 border-gray-300"
+									/>
 									<Label htmlFor="remember">Remember me</Label>
 								</div>
 								<Link href="#" className="underline">

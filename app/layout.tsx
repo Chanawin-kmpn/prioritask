@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Balsamiq_Sans } from 'next/font/google';
 import './globals.css';
 import ThemeProvider from '@/context/Theme';
+import { AuthProvider } from '@/context/Auth';
 
 const balsamiqSans = Balsamiq_Sans({
 	subsets: ['latin'],
@@ -25,14 +26,16 @@ export default function RootLayout({
 			suppressHydrationWarning
 		>
 			<body className={`antialiased`}>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
-					{children}
-				</ThemeProvider>
+				<AuthProvider>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						{children}
+					</ThemeProvider>
+				</AuthProvider>
 			</body>
 		</html>
 	);

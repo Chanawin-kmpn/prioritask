@@ -3,9 +3,9 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import UserAvatar from './UserAvatar';
+import { useAuth } from '@/context/Auth';
 
 const Navbar = () => {
-	const isLogin = false;
 	return (
 		<nav className="bg-light200_dark100 z-50 flex w-full">
 			<div className="flex-1 border-b py-4 pl-16">
@@ -20,13 +20,7 @@ const Navbar = () => {
 				</Link>
 			</div>
 			<div className="border-dark-100 dark:border-light-200 bg-light200_dark100 relative flex min-w-[300px] items-center justify-center border-b border-l">
-				{isLogin ? (
-					<UserAvatar id={'1'} name={'Chanawin Kamolpanus'} />
-				) : (
-					<Link href="/sign-in" className="font-bold tracking-[8px] uppercase">
-						Sign In
-					</Link>
-				)}
+				<UserAvatar />
 			</div>
 		</nav>
 	);

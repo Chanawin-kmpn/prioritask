@@ -3,16 +3,17 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import React from 'react';
 import ThemeToggle from './ThemeToggle';
-import { Button } from './ui/button';
 
 const DropdownMenu = ({
 	id,
 	isOpen,
 	onLinkClick,
+	handleLogout,
 }: {
 	isOpen: boolean;
 	id: string;
 	onLinkClick: () => void;
+	handleLogout: () => Promise<void>;
 }) => {
 	return (
 		<div
@@ -41,7 +42,12 @@ const DropdownMenu = ({
 					</Link>
 				</li>
 				<li role="menuitem">
-					<button className="setting-links w-full text-start">Sign out</button>
+					<button
+						className="setting-links w-full text-start"
+						onClick={handleLogout}
+					>
+						Sign out
+					</button>
 				</li>
 			</ul>
 			<div className="divider" />

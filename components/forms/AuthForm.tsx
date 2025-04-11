@@ -29,6 +29,7 @@ import { Checkbox } from '../ui/checkbox';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import ROUTES from '@/constants/routes';
+import { useAuth } from '@/context/Auth';
 
 interface AuthFormProps<T extends FieldValues> {
 	schema: ZodType<T>;
@@ -43,6 +44,7 @@ const AuthForm = <T extends FieldValues>({
 	formType,
 	onSubmit,
 }: AuthFormProps<T>) => {
+	const auth = useAuth();
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const form = useForm<z.infer<typeof schema>>({
@@ -51,21 +53,24 @@ const AuthForm = <T extends FieldValues>({
 	});
 
 	const handleSubmit = async (values: z.infer<typeof schema>) => {
-		const result = (await onSubmit(values)) as ActionResponse;
+		if (onSubmit) {
+			const result = (await onSubmit(values)) as ActionResponse;
+			if (result.success) {
+				const { email, password } = values;
+				await auth?.loginWithCredential(email, password);
+				toast.success('Success', {
+					description:
+						formType === 'SIGN_UP'
+							? 'Signed up successfully'
+							: 'Signed in successfully',
+				});
 
-		if (result.success) {
-			toast.success('Success', {
-				description:
-					formType === 'SIGN_UP'
-						? 'Signed up successfully'
-						: 'Signed in successfully',
-			});
-
-			router.push(ROUTES.HOME);
-		} else {
-			toast.error(`Error ${result?.status}`, {
-				description: result?.error?.message,
-			});
+				router.push(ROUTES.HOME);
+			} else {
+				toast.error(`Error ${result?.status}`, {
+					description: result?.error?.message,
+				});
+			}
 		}
 	};
 

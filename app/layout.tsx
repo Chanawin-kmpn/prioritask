@@ -3,6 +3,7 @@ import { Balsamiq_Sans } from 'next/font/google';
 import './globals.css';
 import ThemeProvider from '@/context/Theme';
 import { AuthProvider } from '@/context/Auth';
+import { Toaster } from '@/components/ui/sonner';
 
 const balsamiqSans = Balsamiq_Sans({
 	subsets: ['latin'],
@@ -34,6 +35,7 @@ export default function RootLayout({
 						disableTransitionOnChange
 					>
 						{children}
+						<Toaster richColors closeButton />
 					</ThemeProvider>
 				</AuthProvider>
 			</body>

@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import React from 'react';
 import ThemeToggle from './ThemeToggle';
+import { toast } from 'sonner';
 
 const DropdownMenu = ({
 	id,
@@ -44,7 +45,10 @@ const DropdownMenu = ({
 				<li role="menuitem">
 					<button
 						className="setting-links w-full text-start"
-						onClick={handleLogout}
+						onClick={async () => {
+							await handleLogout();
+							toast.success('Logout successfully!!!');
+						}}
 					>
 						Sign out
 					</button>

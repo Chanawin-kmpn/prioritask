@@ -1,9 +1,11 @@
 'use client';
 import { auth } from '@/firebase/client';
+import handleError from '@/handler/error';
 import { setToken, removeToken } from '@/lib/actions/auth.action';
 import {
 	GoogleAuthProvider,
 	ParsedToken,
+	signInWithEmailAndPassword,
 	signInWithPopup,
 	User,
 } from 'firebase/auth';
@@ -20,6 +22,10 @@ type AuthContext = {
 	loginWithGoogle: () => Promise<void>;
 	customCliams: ParsedToken | null;
 	logout: () => Promise<void>;
+	loginWithCredential: (
+		email: string,
+		password: string
+	) => Promise<ActionResponse>;
 };
 
 const AuthContext = createContext<AuthContext | null>(null);
@@ -29,6 +35,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [customCliams, setCustomClaims] = useState<ParsedToken | null>(null);
 
 	useEffect(() => {
+		console.log('Auth Context Call');
+
 		const unsubscribe = auth.onAuthStateChanged(async (user) => {
 			setCurrentUser(user ?? null);
 			if (user) {
@@ -60,9 +68,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		await auth.signOut();
 	};
 
+	const loginWithCredential = async (email: string, password: string) => {
+		try {
+			await signInWithEmailAndPassword(auth, email, password);
+			return { success: true };
+		} catch (error) {
+			return handleError(error) as ErrorResponse;
+		}
+	};
+
 	return (
 		<AuthContext.Provider
-			value={{ currentUser, loginWithGoogle, customCliams, logout }}
+			value={{
+				currentUser,
+				loginWithGoogle,
+				customCliams,
+				logout,
+				loginWithCredential,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>

@@ -1,7 +1,8 @@
 import React from 'react';
 
-const page = () => {
-	return <div>page</div>;
+const ProfilePage = async ({ params }: RouteParams) => {
+	const { id } = await params;
+	return <div>ProfilePage: {id}</div>;
 };
 
-export default page;
+export default ProfilePage;

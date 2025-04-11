@@ -8,3 +8,9 @@ type ActionResponse<T = null> = {
 	};
 	status?: number;
 };
+
+interface RouteParams {
+	//ข้อมูลเป็น object ที่มี Key และ value เป็น string
+	params: Promise<Record<string, string>>;
+	searchParams: Promise<Record<string, string>>;
+}

@@ -9,6 +9,8 @@ type ActionResponse<T = null> = {
 	status?: number;
 };
 
+type ErrorResponse = ActionResponse<undefined> & { success: false };
+
 interface RouteParams {
 	//ข้อมูลเป็น object ที่มี Key และ value เป็น string
 	params: Promise<Record<string, string>>;

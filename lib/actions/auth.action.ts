@@ -1,6 +1,9 @@
 'use server';
-import { auth } from '@/firebase/server';
+import { auth, firestore } from '@/firebase/server';
+import action from '@/handler/action';
 import { cookies } from 'next/headers';
+import { SignUpSchema } from '../validations';
+import handleError from '@/handler/error';
 
 export const removeToken = async () => {
 	const cookiesStore = await cookies();
@@ -43,5 +46,68 @@ export const setToken = async ({
 		});
 	} catch (error) {
 		console.error(error);
+	}
+};
+
+export const signUpWithCredentials = async (
+	params: SignUpWithEmail
+): Promise<ActionResponse> => {
+	const validationResult = await action({ params, schema: SignUpSchema });
+
+	if (validationResult instanceof Error) {
+		return handleError(validationResult) as ErrorResponse;
+	}
+
+	const { username, email, password, confirmPassword } =
+		validationResult.params!;
+
+	try {
+		try {
+			const existingUser = await auth.getUserByEmail(email);
+			if (existingUser) {
+				return {
+					success: false,
+					error: { message: 'อีเมลนี้ถูกใช้งานแล้ว' },
+				};
+			}
+		} catch (error: any) {
+			// ถ้าเป็น error auth/user-not-found ถือว่าปกติ สามารถลงทะเบียนได้
+			if (error.code !== 'auth/user-not-found') {
+				throw error; // ถ้าเป็น error อื่น ให้โยนต่อไป
+			}
+			// ไม่พบผู้ใช้ = ดี เพราะเรากำลังสร้างผู้ใช้ใหม่
+		}
+
+		// 2. ตรวจสอบ username ที่ซ้ำกันอย่างถูกต้อง
+		const usernameQuery = await firestore
+			.collection('users')
+			.where('username', '==', username)
+			.limit(1)
+			.get();
+
+		if (!usernameQuery.empty) {
+			return {
+				success: false,
+				error: { message: 'ชื่อผู้ใช้นี้ถูกใช้งานแล้ว' },
+			};
+		}
+
+		const userCredential = await auth.createUser({
+			displayName: username,
+			email,
+			password,
+		});
+
+		// 4. เก็บข้อมูลใน Firestore โดยใช้ UID จาก auth เป็น document ID
+		await firestore.collection('users').doc(userCredential.uid).set({
+			username,
+			email,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		return { success: true };
+	} catch (error) {
+		return handleError(error) as ErrorResponse;
 	}
 };

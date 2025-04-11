@@ -26,27 +26,46 @@ import { z, ZodType } from 'zod';
 import { formTitles } from '@/constants';
 import { Label } from '@radix-ui/react-label';
 import { Checkbox } from '../ui/checkbox';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import ROUTES from '@/constants/routes';
 
 interface AuthFormProps<T extends FieldValues> {
 	schema: ZodType<T>;
 	defaultValues: T;
 	formType: 'SIGN_IN' | 'SIGN_UP';
+	onSubmit: (data: T) => Promise<ActionResponse>;
 }
 
 const AuthForm = <T extends FieldValues>({
 	schema,
 	defaultValues,
 	formType,
+	onSubmit,
 }: AuthFormProps<T>) => {
+	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const form = useForm<z.infer<typeof schema>>({
 		resolver: zodResolver(schema),
 		defaultValues: defaultValues as DefaultValues<T>,
 	});
 
-	const onSubmit = async (values: z.infer<typeof schema>) => {
-		if (formType === 'SIGN_UP') {
-			console.log('Creating account...');
+	const handleSubmit = async (values: z.infer<typeof schema>) => {
+		const result = (await onSubmit(values)) as ActionResponse;
+
+		if (result.success) {
+			toast.success('Success', {
+				description:
+					formType === 'SIGN_UP'
+						? 'Signed up successfully'
+						: 'Signed in successfully',
+			});
+
+			router.push(ROUTES.HOME);
+		} else {
+			toast.error(`Error ${result?.status}`, {
+				description: result?.error?.message,
+			});
 		}
 	};
 
@@ -81,7 +100,10 @@ const AuthForm = <T extends FieldValues>({
 
 			<div className="w-full">
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+					<form
+						onSubmit={form.handleSubmit(handleSubmit)}
+						className="space-y-2"
+					>
 						{Object.keys(defaultValues).map((field) => (
 							<FormField
 								key={field}
@@ -98,6 +120,7 @@ const AuthForm = <T extends FieldValues>({
 										<FormControl>
 											<Input
 												required
+												{...field}
 												type={
 													field.name === 'password' ||
 													field.name === 'confirmPassword'

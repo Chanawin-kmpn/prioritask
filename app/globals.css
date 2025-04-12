@@ -190,3 +190,7 @@
 @utility setting-links {
 	@apply text-dark100_light200 block cursor-pointer rounded-md p-2 hover:bg-gray-200 dark:hover:bg-zinc-800;
 }
+
+h1 {
+	@apply text-7xl;
+}

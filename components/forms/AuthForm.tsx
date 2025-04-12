@@ -2,14 +2,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useActionState, useState } from 'react';
-import {
-	DefaultValues,
-	FieldValue,
-	FieldValues,
-	Path,
-	useForm,
-} from 'react-hook-form';
+import React, { useState } from 'react';
+import { DefaultValues, FieldValues, Path, useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -64,8 +58,7 @@ const AuthForm = <T extends FieldValues>({
 							? 'Signed up successfully'
 							: 'Signed in successfully',
 				});
-
-				router.push(ROUTES.HOME);
+				window.location.href = ROUTES.HOME;
 			} else {
 				toast.error(`Error ${result?.status}`, {
 					description: result?.error?.message,

@@ -1,21 +1,22 @@
+'use client';
 import ROUTES from '@/constants/routes';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import React from 'react';
 import ThemeToggle from './ThemeToggle';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/Auth';
 
 const DropdownMenu = ({
 	id,
 	isOpen,
 	onLinkClick,
-	handleLogout,
 }: {
 	isOpen: boolean;
 	id: string;
 	onLinkClick: () => void;
-	handleLogout: () => Promise<void>;
 }) => {
+	const auth = useAuth();
 	return (
 		<div
 			className={cn(
@@ -46,7 +47,7 @@ const DropdownMenu = ({
 					<button
 						className="setting-links w-full text-start"
 						onClick={async () => {
-							await handleLogout();
+							await auth?.logout();
 							toast.success('Logout successfully!!!');
 						}}
 					>

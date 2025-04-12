@@ -2,11 +2,15 @@
 import { auth as serverAuth, firestore } from '@/firebase/server';
 import action from '@/handler/action';
 import { cookies } from 'next/headers';
-import { SignInSchema, SignUpSchema } from '../../validations/validations';
+import {
+	GetUserSchema,
+	SignInSchema,
+	SignUpSchema,
+} from '../../validations/validations';
 import handleError from '@/handler/error';
 import { NotFoundError } from '../http-errors';
 import { FirebaseError } from 'firebase/app';
-import { User } from 'firebase/auth';
+import { error } from 'console';
 
 export const removeToken = async () => {
 	const cookiesStore = await cookies();
@@ -57,9 +61,10 @@ export const createAccount = async (userData: {
 	displayName: string | null;
 	email: string | null;
 	providerType: string;
+	photoURL: string | undefined;
 }): Promise<ActionResponse> => {
 	try {
-		const { uid, displayName, email, providerType } = userData;
+		const { uid, displayName, email, providerType, photoURL } = userData;
 
 		if (!uid || !email) {
 			throw new Error('ข้อมูลผู้ใช้ไม่ครบถ้วน');
@@ -69,13 +74,18 @@ export const createAccount = async (userData: {
 
 		if (!userDoc.exists) {
 			// สร้างเฉพาะเมื่อยังไม่มีข้อมูลผู้ใช้
-			await firestore.collection('users').doc(uid).set({
-				username: displayName,
-				email,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				providerType,
-			});
+			await firestore
+				.collection('users')
+				.doc(uid)
+				.set({
+					uid,
+					username: displayName,
+					email,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					providerType,
+					photoURL: photoURL ?? '',
+				});
 		}
 		return { success: true };
 	} catch (error) {
@@ -138,14 +148,18 @@ export const signUpWithCredentials = async (
 		// 4. เก็บข้อมูลใน Firestore โดยใช้ UID จาก auth เป็น document ID
 
 		const userRecord = await serverAuth.getUser(userCredential.uid);
+
+		console.log(userRecord);
+
 		if (userRecord) {
-			const { uid, email, displayName, providerData } = userRecord;
+			const { uid, email, displayName, photoURL, providerData } = userRecord;
 			const providerType = providerData[0]?.providerId;
 			await createAccount({
 				uid,
 				email: email ?? null,
 				displayName: displayName ?? null,
 				providerType,
+				photoURL,
 			});
 		}
 
@@ -194,6 +208,41 @@ export const validateSignInWithCredentials = async (
 
 		return {
 			success: true,
+		};
+	} catch (error) {
+		return handleError(error) as ErrorResponse;
+	}
+};
+
+export const getUserById = async (
+	params: GetUserParams
+): Promise<
+	ActionResponse<{
+		user: Account;
+	}>
+> => {
+	const validationResult = await action({ params, schema: GetUserSchema });
+
+	if (validationResult instanceof error) {
+		return handleError(validationResult) as ErrorResponse;
+	}
+
+	const { id } = params;
+
+	try {
+		const userDoc = await firestore.collection('users').doc(id).get();
+
+		// ตรวจสอบว่าเอกสารมีอยู่จริง
+		if (!userDoc.exists) throw new Error('User not found');
+
+		// ใช้ .data() เพื่อดึงข้อมูลจาก DocumentSnapshot
+		const userData = userDoc.data();
+
+		return {
+			success: true,
+			data: {
+				user: JSON.parse(JSON.stringify(userData)),
+			},
 		};
 	} catch (error) {
 		return handleError(error) as ErrorResponse;

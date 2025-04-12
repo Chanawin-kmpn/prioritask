@@ -13,6 +13,7 @@ import {
 	signInWithPopup,
 	User,
 } from 'firebase/auth';
+import { redirect } from 'next/navigation';
 import {
 	createContext,
 	ReactNode,
@@ -67,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			const result = await signInWithPopup(auth, provider);
 
 			if (result.user) {
-				const { uid, displayName, email, providerData } = result.user;
+				const { uid, displayName, email, providerData, photoURL } = result.user;
 				const providerType = providerData[0]?.providerId;
 
 				// เรียกใช้ Server Action
@@ -76,6 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 					displayName,
 					email,
 					providerType,
+					photoURL: photoURL ?? '',
 				});
 			}
 		} catch (error) {
@@ -85,6 +87,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const logout = async () => {
 		await auth.signOut();
+		redirect('/');
 	};
 
 	const loginWithCredential = async (email: string, password: string) => {

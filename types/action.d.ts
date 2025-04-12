@@ -4,3 +4,17 @@ interface AuthCredentials {
 	password: string;
 	confirmPassword: string;
 }
+
+interface Account {
+	uid: string;
+	username: string;
+	email: string;
+	photoURL: string;
+	providerType: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+interface GetUserParams {
+	id: string;
+}

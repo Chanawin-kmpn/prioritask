@@ -6,8 +6,7 @@ import { SignInSchema, SignUpSchema } from '../validations';
 import handleError from '@/handler/error';
 import { NotFoundError } from '../http-errors';
 import { FirebaseError } from 'firebase/app';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth as clientAuth } from '@/firebase/client';
+import { User } from 'firebase/auth';
 
 export const removeToken = async () => {
 	const cookiesStore = await cookies();
@@ -50,6 +49,37 @@ export const setToken = async ({
 		});
 	} catch (error) {
 		console.error(error);
+	}
+};
+
+export const createAccount = async (userData: {
+	uid: string;
+	displayName: string | null;
+	email: string | null;
+	providerType: string;
+}): Promise<ActionResponse> => {
+	try {
+		const { uid, displayName, email, providerType } = userData;
+
+		if (!uid || !email) {
+			throw new Error('ข้อมูลผู้ใช้ไม่ครบถ้วน');
+		}
+
+		const userDoc = await firestore.collection('users').doc(uid).get();
+
+		if (!userDoc.exists) {
+			// สร้างเฉพาะเมื่อยังไม่มีข้อมูลผู้ใช้
+			await firestore.collection('users').doc(uid).set({
+				username: displayName,
+				email,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				providerType,
+			});
+		}
+		return { success: true };
+	} catch (error) {
+		return handleError(error) as ErrorResponse;
 	}
 };
 
@@ -106,13 +136,20 @@ export const signUpWithCredentials = async (
 		});
 
 		// 4. เก็บข้อมูลใน Firestore โดยใช้ UID จาก auth เป็น document ID
-		await firestore.collection('users').doc(userCredential.uid).set({
-			username,
-			email,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			providerType: 'credential',
-		});
+
+		const userRecord = await serverAuth.getUser(userCredential.uid);
+		if (userRecord) {
+			const { uid, email, displayName, providerData } = userRecord;
+			const providerType = providerData[0]?.providerId;
+			await createAccount({
+				uid,
+				email: email ?? null,
+				displayName: displayName ?? null,
+				providerType,
+			});
+		}
+
+		// await createAccount(userRecord as unknown as User);
 
 		return { success: true };
 	} catch (error) {

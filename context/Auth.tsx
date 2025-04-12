@@ -1,7 +1,11 @@
 'use client';
 import { auth } from '@/firebase/client';
 import handleError from '@/handler/error';
-import { setToken, removeToken } from '@/lib/actions/auth.action';
+import {
+	setToken,
+	removeToken,
+	createAccount,
+} from '@/lib/actions/auth.action';
 import {
 	GoogleAuthProvider,
 	ParsedToken,
@@ -60,8 +64,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	}, []);
 
 	const loginWithGoogle = async () => {
-		const provider = new GoogleAuthProvider();
-		await signInWithPopup(auth, provider);
+		try {
+			const provider = new GoogleAuthProvider();
+			const result = await signInWithPopup(auth, provider);
+
+			if (result.user) {
+				const { uid, displayName, email, providerData } = result.user;
+				const providerType = providerData[0]?.providerId;
+
+				// เรียกใช้ Server Action
+				await createAccount({
+					uid,
+					displayName,
+					email,
+					providerType,
+				});
+			}
+		} catch (error) {
+			console.error('เกิดข้อผิดพลาดตอนล็อกอิน:', error);
+		}
 	};
 
 	const logout = async () => {

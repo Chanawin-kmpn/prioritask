@@ -39,8 +39,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [customCliams, setCustomClaims] = useState<ParsedToken | null>(null);
 
 	useEffect(() => {
-		console.log('Auth Context Call');
-
 		const unsubscribe = auth.onAuthStateChanged(async (user) => {
 			setCurrentUser(user ?? null);
 			if (user) {

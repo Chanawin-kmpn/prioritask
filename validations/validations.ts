@@ -58,6 +58,6 @@ export const SignUpSchema = z
 			}),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
-		message: 'Passwords do not match.',
-		path: ['confirm'],
+		message: 'Password do not match',
+		path: ['confirmPassword'],
 	});

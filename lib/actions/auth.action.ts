@@ -2,7 +2,7 @@
 import { auth as serverAuth, firestore } from '@/firebase/server';
 import action from '@/handler/action';
 import { cookies } from 'next/headers';
-import { SignInSchema, SignUpSchema } from '../validations';
+import { SignInSchema, SignUpSchema } from '../../validations/validations';
 import handleError from '@/handler/error';
 import { NotFoundError } from '../http-errors';
 import { FirebaseError } from 'firebase/app';

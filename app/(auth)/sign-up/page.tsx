@@ -1,7 +1,7 @@
 'use client';
 import AuthForm from '@/components/forms/AuthForm';
 import { signUpWithCredentials } from '@/lib/actions/auth.action';
-import { SignUpSchema } from '@/lib/validations';
+import { SignUpSchema } from '@/validations/validations';
 import React from 'react';
 
 const SignUp = () => {

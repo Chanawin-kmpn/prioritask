@@ -15,7 +15,6 @@ const ThemeToggle = () => {
 
 	const handleThemeChange = (selectedTheme: string) => {
 		setTheme(selectedTheme);
-		toast.success('Hello');
 	};
 
 	if (!mounted) return null;

@@ -11,7 +11,7 @@ const layout = ({ children }: { children: ReactNode }) => {
 						alt="Prioritask Demo"
 						fill
 						priority
-						sizes="100vw"
+						sizes="(max-width: 768px) 100vw, 50vw"
 						className="bg-light-100 object-contain object-left dark:hidden"
 					/>
 					<Image
@@ -19,7 +19,7 @@ const layout = ({ children }: { children: ReactNode }) => {
 						alt="Prioritask Demo"
 						fill
 						priority
-						sizes="100vw"
+						sizes="(max-width: 768px) 100vw, 50vw"
 						className="hidden h-fit bg-zinc-900 object-contain object-left dark:block"
 					/>
 				</section>

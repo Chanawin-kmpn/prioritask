@@ -6,24 +6,25 @@ import { avatarTextGenerate, cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import DropdownMenu from './DropdownMenu';
+import { useAuth } from '@/context/Auth';
+import ROUTES from '@/constants/routes';
+import { User } from 'firebase/auth';
 
 interface UserAvatarProps {
-	uid: string;
-	username: string;
-	photoURL: string;
+	user: User;
 	className?: string;
 	menuItems?: { label: string; href: string }[];
 }
 
 const UserAvatar = ({
-	uid,
-	username,
-	photoURL,
 	className = 'size-12',
 	menuItems = [],
 }: UserAvatarProps) => {
+	const auth = useAuth();
+	const user = auth?.currentUser;
 	const [isOpen, setIsOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
+	const { uid, displayName: username, photoURL } = user!;
 
 	let initials: string = '';
 	if (username) {

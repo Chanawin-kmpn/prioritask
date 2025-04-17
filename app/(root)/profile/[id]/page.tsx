@@ -1,13 +1,12 @@
 import ProfileDetail from '@/components/profile/ProfileDetail';
 import { getUserById } from '@/lib/actions/auth.action';
+import { redirect } from 'next/navigation';
 import React, { cache } from 'react';
 import { toast } from 'sonner';
 
 //? หลักๆหน้านี้ใช้ auth.currentUser ในแสดงและแก้ไขข้อมูลยกเว้นแก้ displayname และ update เวลาที่แก้ไข ต้องแก้ใน database ด้วย
 
 const getCachedUserById = cache(async (id: string) => {
-	console.log('load!');
-
 	return await getUserById({ id });
 });
 
@@ -16,6 +15,7 @@ const ProfilePage = async ({ params }: RouteParams) => {
 	const { success, data } = await getCachedUserById(id);
 	if (!success) {
 		toast.error('Failed to fetch user data');
+		redirect('/');
 	}
 
 	const { uid, username, email, providerType, photoURL, createdAt } =

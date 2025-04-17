@@ -39,7 +39,6 @@ const AuthForm = <T extends FieldValues>({
 	onSubmit,
 }: AuthFormProps<T>) => {
 	const auth = useAuth();
-	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const form = useForm<z.infer<typeof schema>>({
 		resolver: zodResolver(schema),
@@ -157,7 +156,7 @@ const AuthForm = <T extends FieldValues>({
 							<Button
 								type="submit"
 								size="lg"
-								className="text-light-200 bg-dark-100 mb-0 w-full rounded-md py-4 text-base hover:bg-zinc-700"
+								className="submit-btn"
 								disabled={isLoading}
 							>
 								{titleConfig.submitBtn}

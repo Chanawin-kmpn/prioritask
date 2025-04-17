@@ -191,6 +191,14 @@
 	@apply text-dark100_light200 block cursor-pointer rounded-md p-2 hover:bg-gray-200 dark:hover:bg-zinc-800;
 }
 
+@utility submit-btn {
+	@apply text-light-200 bg-dark-100 mb-0 w-full rounded-md py-4 hover:bg-zinc-700;
+}
+
 h1 {
 	@apply text-7xl;
+}
+
+h2 {
+	@apply text-3xl font-bold;
 }

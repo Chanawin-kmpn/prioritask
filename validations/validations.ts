@@ -110,3 +110,7 @@ export const EditProfileSchema = z.object({
 export const GetUserSchema = z.object({
 	id: z.string().min(1, { message: 'User ID is required' }),
 });
+
+export const DeleteAccountSchema = z.object({
+	id: z.string().min(1, { message: 'User ID is required' }),
+});

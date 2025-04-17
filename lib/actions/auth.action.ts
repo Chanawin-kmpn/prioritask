@@ -3,6 +3,7 @@ import { auth as serverAuth, firestore } from '@/firebase/server';
 import action from '@/handler/action';
 import { cookies } from 'next/headers';
 import {
+	DeleteAccountSchema,
 	GetUserSchema,
 	SignInSchema,
 	SignUpSchema,
@@ -11,6 +12,14 @@ import handleError from '@/handler/error';
 import { NotFoundError } from '../http-errors';
 import { FirebaseError } from 'firebase/app';
 import { error } from 'console';
+import {
+	AuthCredentials,
+	GetUserParams,
+	Account,
+	DeleteAccountParams,
+} from '@/types/action';
+import { cache } from 'react';
+import { revalidatePath } from 'next/cache';
 
 export const removeToken = async () => {
 	const cookiesStore = await cookies();
@@ -62,9 +71,11 @@ export const createAccount = async (userData: {
 	email: string | null;
 	providerType: string;
 	photoURL: string | undefined;
+	createdAt: string | undefined;
 }): Promise<ActionResponse> => {
 	try {
-		const { uid, displayName, email, providerType, photoURL } = userData;
+		const { uid, displayName, email, providerType, photoURL, createdAt } =
+			userData;
 
 		if (!uid || !email) {
 			throw new Error('ข้อมูลผู้ใช้ไม่ครบถ้วน');
@@ -81,8 +92,8 @@ export const createAccount = async (userData: {
 					uid,
 					username: displayName,
 					email,
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					createdAt,
+					updatedAt: createdAt,
 					providerType,
 					photoURL: photoURL ?? '',
 				});
@@ -149,10 +160,9 @@ export const signUpWithCredentials = async (
 
 		const userRecord = await serverAuth.getUser(userCredential.uid);
 
-		console.log(userRecord);
-
 		if (userRecord) {
 			const { uid, email, displayName, photoURL, providerData } = userRecord;
+			const createdAt = userRecord.metadata.creationTime;
 			const providerType = providerData[0]?.providerId;
 			await createAccount({
 				uid,
@@ -160,6 +170,7 @@ export const signUpWithCredentials = async (
 				displayName: displayName ?? null,
 				providerType,
 				photoURL,
+				createdAt,
 			});
 		}
 
@@ -244,6 +255,29 @@ export const getUserById = async (
 				user: JSON.parse(JSON.stringify(userData)),
 			},
 		};
+	} catch (error) {
+		return handleError(error) as ErrorResponse;
+	}
+};
+
+export const deleteAccount = async (
+	params: DeleteAccountParams
+): Promise<ActionResponse> => {
+	const validationResult = await action({
+		params,
+		schema: DeleteAccountSchema,
+	});
+
+	if (validationResult instanceof error) {
+		return handleError(validationResult) as ErrorResponse;
+	}
+
+	const { id } = params;
+
+	try {
+		await firestore.collection('users').doc(id).delete();
+
+		return { success: true };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;
 	}

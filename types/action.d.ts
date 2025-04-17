@@ -1,3 +1,5 @@
+import { User } from 'firebase/auth';
+
 interface AuthCredentials {
 	username: string;
 	email: string;
@@ -16,5 +18,9 @@ interface Account {
 }
 
 interface GetUserParams {
+	id: string;
+}
+
+interface DeleteAccountParams {
 	id: string;
 }

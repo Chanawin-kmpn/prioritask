@@ -21,9 +21,7 @@ export async function middleware(request: NextRequest) {
 
 	if (
 		tokenValue &&
-		(pathname.startsWith('/sign-in') ||
-			pathname.startsWith('/sign-up') ||
-			pathname.startsWith('/dashboard'))
+		(pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up'))
 	) {
 		return NextResponse.redirect(new URL('/', request.url));
 	}
@@ -46,16 +44,7 @@ export async function middleware(request: NextRequest) {
 			)
 		);
 	} //เผื่อเวลาไว้ 5 นาที
-
-	if (!decodedToken.admin && pathname.startsWith('/admin-dashboard')) {
-		return NextResponse.redirect(new URL('/', request.url));
-	} // เช็คว่าเป็น Admin หรือไม่
-
-	if (decodedToken.admin && pathname.startsWith('/account/my-favourites')) {
-		return NextResponse.redirect(new URL('/', request.url));
-	}
-	return NextResponse.next();
 }
 export const config = {
-	matcher: ['/sign-in', '/sign-up', '/dashboard'],
+	matcher: ['/sign-in', '/sign-up', '/dashboard', '/profile/:path*'],
 };

@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { cn } from '@/lib/utils';
+import { avatarTextGenerate, cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import DropdownMenu from './DropdownMenu';
@@ -27,12 +27,7 @@ const UserAvatar = ({
 
 	let initials: string = '';
 	if (username) {
-		initials = username
-			.split(' ')
-			.map((word: string) => word[0])
-			.join('')
-			.toUpperCase()
-			.slice(0, 2);
+		initials = avatarTextGenerate(username);
 	}
 
 	// เพิ่มฟังก์ชันสำหรับปิด dropdown

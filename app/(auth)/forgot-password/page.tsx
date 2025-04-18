@@ -8,20 +8,20 @@ const page = () => {
 			<div className="w-full space-y-2">
 				<Image
 					src="/images/prioritask-logo.png"
-					alt="Prioritask-logo"
+					alt="Prioritask Logo"
 					width={200}
 					height={80}
 					className="mx-auto"
 				/>
 
-				<div className="space-x-4">
-					<h2 className="text-3xl font-bold">Forgot Password?</h2>
-					<div className="space-x-4">
-						<p className="inline text-sm">
-							Don't worry enter your email for get a link for recovery your
-							password.
-						</p>
-					</div>
+				<div>
+					<h2 className="text-center text-3xl font-bold">
+						Forgot your password?
+					</h2>
+					<p className="mt-2 text-center text-sm">
+						No worries! Enter your email address and we’ll send you a link to
+						reset your password.
+					</p>
 				</div>
 			</div>
 

@@ -115,14 +115,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const updateUserProfile = async (username: string) => {
 		try {
-			// ตรวจสอบ rate limit
+			// Check rate limit
 			const limitResult = rateLimitCheck('PROFILE_UPDATE', currentUser?.uid!);
 
 			if (limitResult.limited) {
 				return {
 					success: false,
 					error: {
-						message: `คุณอัพเดตโปรไฟล์บ่อยเกินไป โปรดรออีก ${limitResult.remainingMinutes} นาที`,
+						message: `You are updating your profile too frequently. Please wait another ${limitResult.remainingMinutes} minutes.`,
 					},
 				};
 			}
@@ -139,13 +139,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		newPassword: string
 	) => {
 		try {
+			// Check rate limit
 			const limitResult = rateLimitCheck('PASSWORD_CHANGE', currentUser?.uid!);
 
 			if (limitResult.limited) {
 				return {
 					success: false,
 					error: {
-						message: `คุณเปลี่ยนรหัสผ่านบ่อยเกินไป โปรดรออีก ${limitResult.remainingMinutes} นาที`,
+						message: `You are changing your password too frequently. Please wait another ${limitResult.remainingMinutes} minutes.`,
 					},
 				};
 			}
@@ -170,14 +171,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const resetUserPassword = async (email: string) => {
 		try {
-			// ตรวจสอบ rate limit สำหรับการรีเซ็ตรหัสผ่าน
+			// Check rate limit for password reset
 			const limitResult = rateLimitCheck('PASSWORD_RESET', email);
 
 			if (limitResult.limited) {
 				return {
 					success: false,
 					error: {
-						message: `คุณขอรีเซ็ตรหัสผ่านบ่อยเกินไป โปรดรออีก ${limitResult.remainingMinutes} นาที`,
+						message: `You are requesting password resets too frequently. Please wait another ${limitResult.remainingMinutes} minutes.`,
 					},
 				};
 			}
@@ -186,7 +187,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 			return { success: true };
 
-			// ถ้าผ่าน rate limit ส่งอีเมลรีเซ็ตรหัสผ่าน
+			// If passed the rate limit, send password reset email
 		} catch (error) {
 			return handleError(error) as ErrorResponse;
 		}

@@ -151,7 +151,7 @@ const AuthForm = <T extends FieldValues>({
 									/>
 									<Label htmlFor="remember">Remember me</Label>
 								</div>
-								<Link href="#" className="underline">
+								<Link href={ROUTES.FORGOT_PASSWORD} className="underline">
 									Forget password
 								</Link>
 							</div>

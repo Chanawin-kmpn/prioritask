@@ -15,11 +15,10 @@ import {
 import { Input } from '../ui/input';
 import Link from 'next/link';
 import { updateUser } from '@/lib/actions/auth.action';
-import { updateEmail, updatePassword, updateProfile } from 'firebase/auth';
 import { useAuth } from '@/context/Auth';
 import { toast } from 'sonner';
-import { error } from 'console';
 import { useRouter } from 'next/navigation';
+import ROUTES from '@/constants/routes';
 
 const EditProfileForm = ({
 	id,
@@ -34,8 +33,6 @@ const EditProfileForm = ({
 }) => {
 	const router = useRouter();
 	const auth = useAuth();
-	const user = auth?.currentUser!;
-	const isGoogleProvider = providerType === 'google.com';
 	const form = useForm<z.infer<typeof EditProfileSchema>>({
 		resolver: zodResolver(EditProfileSchema),
 		defaultValues: {
@@ -162,7 +159,9 @@ const EditProfileForm = ({
 								<p>
 									Forgot your password?{' '}
 									<span className="underline">
-										<Link href="#">Recover your password</Link>
+										<Link href={ROUTES.FORGOT_PASSWORD}>
+											Recover your password
+										</Link>
 									</span>
 								</p>
 							</div>

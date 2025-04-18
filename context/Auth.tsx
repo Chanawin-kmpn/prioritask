@@ -182,13 +182,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				};
 			}
 
-			// ถ้าผ่าน rate limit ส่งอีเมลรีเซ็ตรหัสผ่าน
 			await sendPasswordResetEmail(auth, email);
 
-			return {
-				success: true,
-				message: 'อีเมลรีเซ็ตรหัสผ่านถูกส่งแล้ว โปรดตรวจสอบอีเมลของคุณ',
-			};
+			return { success: true };
+
+			// ถ้าผ่าน rate limit ส่งอีเมลรีเซ็ตรหัสผ่าน
 		} catch (error) {
 			return handleError(error) as ErrorResponse;
 		}

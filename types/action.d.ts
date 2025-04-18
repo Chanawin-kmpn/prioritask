@@ -28,3 +28,7 @@ interface UpdateAccountParams {
 	id: string;
 	username?: string;
 }
+
+interface ForgotPasswordParams {
+	email: string;
+}

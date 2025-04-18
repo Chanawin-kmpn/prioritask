@@ -87,3 +87,10 @@ export const UpdateProfileSchema = z.object({
 			message: 'Name can only contain letters and spaces.',
 		}),
 });
+
+export const ForgotPasswordSchema = z.object({
+	email: z
+		.string()
+		.min(1, { message: 'Email is required' })
+		.email({ message: 'Please provide a valid email address.' }),
+});

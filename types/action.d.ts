@@ -14,7 +14,6 @@ interface Account {
 	photoURL: string;
 	providerType: string;
 	createdAt: Date;
-	updatedAt: Date;
 }
 
 interface GetUserParams {

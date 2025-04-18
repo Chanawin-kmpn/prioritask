@@ -6,11 +6,13 @@ import {
 	removeToken,
 	createAccount,
 } from '@/lib/actions/auth.action';
+import { rateLimitCheck } from '@/lib/utils';
 import {
 	EmailAuthProvider,
 	GoogleAuthProvider,
 	ParsedToken,
 	reauthenticateWithCredential,
+	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
 	signInWithPopup,
 	updateEmail,
@@ -41,6 +43,7 @@ type AuthContext = {
 		currentPassword: string,
 		newPassword: string
 	) => Promise<ActionResponse>;
+	resetUserPassword: (email: string) => Promise<ActionResponse>;
 };
 
 const AuthContext = createContext<AuthContext | null>(null);
@@ -70,7 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		});
 
 		return () => unsubscribe();
-	}, []);
+	}, [currentUser]);
 
 	const loginWithGoogle = async () => {
 		try {
@@ -112,6 +115,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 	const updateUserProfile = async (username: string) => {
 		try {
+			// ตรวจสอบ rate limit
+			const limitResult = rateLimitCheck('PROFILE_UPDATE', currentUser?.uid!);
+
+			if (limitResult.limited) {
+				return {
+					success: false,
+					error: {
+						message: `คุณอัพเดตโปรไฟล์บ่อยเกินไป โปรดรออีก ${limitResult.remainingMinutes} นาที`,
+					},
+				};
+			}
+
 			await updateProfile(currentUser!, { displayName: username });
 			return { success: true };
 		} catch (error) {
@@ -124,6 +139,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		newPassword: string
 	) => {
 		try {
+			const limitResult = rateLimitCheck('PASSWORD_CHANGE', currentUser?.uid!);
+
+			if (limitResult.limited) {
+				return {
+					success: false,
+					error: {
+						message: `คุณเปลี่ยนรหัสผ่านบ่อยเกินไป โปรดรออีก ${limitResult.remainingMinutes} นาที`,
+					},
+				};
+			}
 			const credential = EmailAuthProvider.credential(
 				currentUser?.email!,
 				currentPassword
@@ -143,6 +168,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		}
 	};
 
+	const resetUserPassword = async (email: string) => {
+		try {
+			// ตรวจสอบ rate limit สำหรับการรีเซ็ตรหัสผ่าน
+			const limitResult = rateLimitCheck('PASSWORD_RESET', email);
+
+			if (limitResult.limited) {
+				return {
+					success: false,
+					error: {
+						message: `คุณขอรีเซ็ตรหัสผ่านบ่อยเกินไป โปรดรออีก ${limitResult.remainingMinutes} นาที`,
+					},
+				};
+			}
+
+			// ถ้าผ่าน rate limit ส่งอีเมลรีเซ็ตรหัสผ่าน
+			await sendPasswordResetEmail(auth, email);
+
+			return {
+				success: true,
+				message: 'อีเมลรีเซ็ตรหัสผ่านถูกส่งแล้ว โปรดตรวจสอบอีเมลของคุณ',
+			};
+		} catch (error) {
+			return handleError(error) as ErrorResponse;
+		}
+	};
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -153,6 +204,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				loginWithCredential,
 				updateUserProfile,
 				updateUserPassword,
+				resetUserPassword,
 			}}
 		>
 			{children}

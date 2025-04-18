@@ -16,3 +16,5 @@ interface RouteParams {
 	params: Promise<Record<string, string>>;
 	searchParams: Promise<Record<string, string>>;
 }
+
+type ActionType = 'PROFILE_UPDATE' | 'PASSWORD_CHANGE' | 'PASSWORD_RESET';

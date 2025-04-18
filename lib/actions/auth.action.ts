@@ -1,5 +1,9 @@
 'use server';
-import { auth as serverAuth, firestore, auth } from '@/firebase/server';
+import {
+	auth as serverAuth,
+	firestore,
+	checkServerRateLimit,
+} from '@/firebase/server';
 import action from '@/handler/action';
 import { cookies } from 'next/headers';
 import {
@@ -13,6 +17,7 @@ import handleError from '@/handler/error';
 import { NotFoundError } from '../http-errors';
 import { FirebaseError } from 'firebase/app';
 import { error } from 'console';
+import * as admin from 'firebase-admin';
 import {
 	AuthCredentials,
 	GetUserParams,
@@ -95,7 +100,6 @@ export const createAccount = async (userData: {
 					username: displayName,
 					email,
 					createdAt,
-					updatedAt: createdAt,
 					providerType,
 					photoURL: photoURL ?? '',
 				});
@@ -277,6 +281,17 @@ export const updateUser = async (
 	const { id, username } = validationResult.params!;
 
 	try {
+		const rateCheck = await checkServerRateLimit(id, 'PROFILE_UPDATE', 3, 3600); // 3 ครั้ง/ชั่วโมง
+
+		if (rateCheck.limited) {
+			return {
+				success: false,
+				error: {
+					message:
+						rateCheck.message || 'ดำเนินการบ่อยเกินไป โปรดลองอีกครั้งในภายหลัง',
+				},
+			};
+		}
 		const userDoc = await firestore.collection('users').doc(id).get();
 
 		if (!userDoc.exists) {
@@ -332,8 +347,19 @@ export const deleteAccount = async (
 	const { id } = params;
 
 	try {
-		await firestore.collection('users').doc(id).delete();
+		const batch = firestore.batch();
+		const limitsSnapshot = await firestore
+			.collection('rateLimits')
+			.where('userId', '==', id)
+			.get();
 
+		limitsSnapshot.forEach((doc) => {
+			batch.delete(doc.ref);
+		});
+
+		await batch.commit();
+
+		await firestore.collection('users').doc(id).delete();
 		return { success: true };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;

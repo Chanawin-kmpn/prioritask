@@ -34,9 +34,17 @@ const DeleteDialog = ({ id, username }: { id: string; username: string }) => {
 				toast.error('Failed to delete user');
 				return;
 			}
-
 			await deleteUser(user);
 			await removeToken();
+
+			if (user.uid) {
+				Object.keys(localStorage).forEach((key) => {
+					if (key.includes(user.uid) || key.startsWith('rateLimit_')) {
+						localStorage.removeItem(key);
+					}
+				});
+			}
+
 			redirect('/');
 		}
 	};

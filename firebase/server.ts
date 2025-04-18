@@ -1,7 +1,7 @@
 import admin, { ServiceAccount } from 'firebase-admin';
 import { getApps } from 'firebase-admin/app';
 import { Auth, getAuth } from 'firebase-admin/auth';
-import { Firestore, getFirestore } from 'firebase-admin/firestore';
+import { Firestore, getFirestore, Timestamp } from 'firebase-admin/firestore';
 
 const serviceAccount = {
 	type: 'service_account',
@@ -35,4 +35,75 @@ if (!currentApps.length) {
 	auth = getAuth(app);
 }
 
-export { auth, firestore };
+async function checkServerRateLimit(
+	userId: string,
+	action: string,
+	maxAttempts: number = 3,
+	windowSeconds: number = 3600
+): Promise<{ limited: boolean; message?: string }> {
+	const limitRef = firestore
+		.collection('rateLimits')
+		.doc(`${action}_${userId}`);
+
+	// ใช้ transaction เพื่อความถูกต้อง
+	return await firestore.runTransaction(async (transaction) => {
+		const doc = await transaction.get(limitRef);
+		const now = Timestamp.now();
+		const windowStart = new Timestamp(
+			now.seconds - windowSeconds,
+			now.nanoseconds
+		);
+
+		if (!doc.exists) {
+			// สร้างใหม่
+			transaction.set(limitRef, {
+				attempts: 1,
+				firstAttempt: now,
+				lastAttempt: now,
+				userId: userId,
+			});
+			return { limited: false };
+		}
+
+		const data = doc.data()!;
+
+		// ถ้าผ่านช่วงเวลาที่กำหนดแล้ว รีเซ็ตนับใหม่
+		if (data.firstAttempt.toDate() < windowStart.toDate()) {
+			transaction.set(limitRef, {
+				attempts: 1,
+				firstAttempt: now,
+				lastAttempt: now,
+				userId: userId,
+			});
+			return { limited: false };
+		}
+
+		console.log('Data Attempts', data.attempts);
+		console.log('Max Attempts', maxAttempts);
+
+		// ถ้าเกินจำนวนครั้ง
+		if (data.attempts >= maxAttempts) {
+			const resetTime = new Date(
+				data.firstAttempt.toDate().getTime() + windowSeconds * 1000
+			);
+			const minutesRemaining = Math.ceil(
+				(resetTime.getTime() - Date.now()) / 60000
+			);
+
+			return {
+				limited: true,
+				message: `คุณได้อัพเดตโปรไฟล์เกินจำนวนครั้งที่กำหนด โปรดรออีก ${minutesRemaining} นาที`,
+			};
+		}
+
+		// อัพเดตจำนวนครั้ง
+		transaction.update(limitRef, {
+			attempts: data.attempts + 1,
+			lastAttempt: now,
+		});
+
+		return { limited: false };
+	});
+}
+
+export { auth, firestore, checkServerRateLimit };

@@ -1,5 +1,5 @@
 'use server';
-import { auth as serverAuth, firestore } from '@/firebase/server';
+import { auth as serverAuth, firestore, auth } from '@/firebase/server';
 import action from '@/handler/action';
 import { cookies } from 'next/headers';
 import {
@@ -7,6 +7,7 @@ import {
 	GetUserSchema,
 	SignInSchema,
 	SignUpSchema,
+	UpdateProfileSchema,
 } from '../../validations/validations';
 import handleError from '@/handler/error';
 import { NotFoundError } from '../http-errors';
@@ -17,9 +18,10 @@ import {
 	GetUserParams,
 	Account,
 	DeleteAccountParams,
+	UpdateAccountParams,
 } from '@/types/action';
-import { cache } from 'react';
 import { revalidatePath } from 'next/cache';
+import ROUTES from '@/constants/routes';
 
 export const removeToken = async () => {
 	const cookiesStore = await cookies();
@@ -255,6 +257,61 @@ export const getUserById = async (
 				user: JSON.parse(JSON.stringify(userData)),
 			},
 		};
+	} catch (error) {
+		return handleError(error) as ErrorResponse;
+	}
+};
+
+export const updateUser = async (
+	params: UpdateAccountParams
+): Promise<ActionResponse> => {
+	const validationResult = await action({
+		params,
+		schema: UpdateProfileSchema,
+	});
+
+	if (validationResult instanceof Error) {
+		return handleError(validationResult) as ErrorResponse;
+	}
+
+	const { id, username } = validationResult.params!;
+
+	try {
+		const userDoc = await firestore.collection('users').doc(id).get();
+
+		if (!userDoc.exists) {
+			throw new Error('User not found');
+		}
+
+		const userData = userDoc.data();
+		if (userData?.providerType === 'google.com') {
+			if (userData?.username !== username) {
+				await firestore.collection('users').doc(id).update({
+					username,
+				});
+			}
+		} else {
+			if (userData?.username !== username) {
+				const usernameQuery = await firestore
+					.collection('users')
+					.where('username', '==', username)
+					.limit(1)
+					.get();
+
+				if (!usernameQuery.empty) {
+					return {
+						success: false,
+						error: { message: 'This username has been already used!' },
+					};
+				}
+
+				await firestore.collection('users').doc(id).update({
+					username,
+				});
+			}
+		}
+		revalidatePath(`${ROUTES.PROFILE(id)}`);
+		return { success: true };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;
 	}

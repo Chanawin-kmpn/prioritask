@@ -5,9 +5,21 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '../ui/button';
-import { FormField, FormItem, FormControl, Form } from '../ui/form';
+import {
+	FormField,
+	FormItem,
+	FormControl,
+	Form,
+	FormMessage,
+} from '../ui/form';
 import { Input } from '../ui/input';
 import Link from 'next/link';
+import { updateUser } from '@/lib/actions/auth.action';
+import { updateEmail, updatePassword, updateProfile } from 'firebase/auth';
+import { useAuth } from '@/context/Auth';
+import { toast } from 'sonner';
+import { error } from 'console';
+import { useRouter } from 'next/navigation';
 
 const EditProfileForm = ({
 	id,
@@ -20,6 +32,9 @@ const EditProfileForm = ({
 	email: string;
 	providerType: string;
 }) => {
+	const router = useRouter();
+	const auth = useAuth();
+	const user = auth?.currentUser!;
 	const isGoogleProvider = providerType === 'google.com';
 	const form = useForm<z.infer<typeof EditProfileSchema>>({
 		resolver: zodResolver(EditProfileSchema),
@@ -31,7 +46,33 @@ const EditProfileForm = ({
 		},
 	});
 
-	const handleSubmit = async (values: z.infer<typeof EditProfileSchema>) => {};
+	const handleSubmit = async (values: z.infer<typeof EditProfileSchema>) => {
+		const { success, error } = await updateUser({
+			id,
+			username: values.username,
+		});
+		if (success) {
+			await auth?.updateUserProfile(values.username);
+			toast.success('Update username successfully');
+		} else {
+			toast.error(error?.message);
+		}
+
+		if (values.currentPassword && values.newPassword) {
+			const response = await auth?.updateUserPassword(
+				values.currentPassword,
+				values.newPassword
+			);
+
+			if (!response?.success) {
+				toast.error(response?.error?.message);
+			} else {
+				toast.success('Update password successfully');
+			}
+		}
+
+		router.refresh();
+	};
 	return (
 		<div className="bg-light-100 rounded-[28px] border border-gray-100 p-8 dark:bg-zinc-800">
 			<Form {...form}>
@@ -51,6 +92,7 @@ const EditProfileForm = ({
 											<FormControl>
 												<Input {...field} />
 											</FormControl>
+											<FormMessage />
 										</FormItem>
 									)}
 								/>
@@ -66,11 +108,9 @@ const EditProfileForm = ({
 									render={({ field }) => (
 										<FormItem>
 											<FormControl>
-												<Input
-													{...field}
-													disabled={providerType === 'google.com'}
-												/>
+												<Input {...field} disabled />
 											</FormControl>
+											<FormMessage />
 										</FormItem>
 									)}
 								/>
@@ -93,6 +133,7 @@ const EditProfileForm = ({
 													placeholder="Enter your current password"
 												/>
 											</FormControl>
+											<FormMessage />
 										</FormItem>
 									)}
 								/>
@@ -109,6 +150,7 @@ const EditProfileForm = ({
 													placeholder="Enter your new password"
 												/>
 											</FormControl>
+											<FormMessage />
 										</FormItem>
 									)}
 								/>

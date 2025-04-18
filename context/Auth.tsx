@@ -7,10 +7,15 @@ import {
 	createAccount,
 } from '@/lib/actions/auth.action';
 import {
+	EmailAuthProvider,
 	GoogleAuthProvider,
 	ParsedToken,
+	reauthenticateWithCredential,
 	signInWithEmailAndPassword,
 	signInWithPopup,
+	updateEmail,
+	updatePassword,
+	updateProfile,
 	User,
 } from 'firebase/auth';
 import { redirect } from 'next/navigation';
@@ -30,6 +35,11 @@ type AuthContext = {
 	loginWithCredential: (
 		email: string,
 		password: string
+	) => Promise<ActionResponse>;
+	updateUserProfile: (username: string) => Promise<ActionResponse>;
+	updateUserPassword: (
+		currentPassword: string,
+		newPassword: string
 	) => Promise<ActionResponse>;
 };
 
@@ -100,6 +110,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		}
 	};
 
+	const updateUserProfile = async (username: string) => {
+		try {
+			await updateProfile(currentUser!, { displayName: username });
+			return { success: true };
+		} catch (error) {
+			return handleError(error) as ErrorResponse;
+		}
+	};
+
+	const updateUserPassword = async (
+		currentPassword: string,
+		newPassword: string
+	) => {
+		try {
+			const credential = EmailAuthProvider.credential(
+				currentUser?.email!,
+				currentPassword
+			);
+			try {
+				await reauthenticateWithCredential(currentUser!, credential);
+			} catch (error) {
+				return {
+					success: false,
+					error: { message: 'Current password invalid' },
+				};
+			}
+			await updatePassword(currentUser!, newPassword);
+			return { success: true };
+		} catch (error) {
+			return handleError(error) as ErrorResponse;
+		}
+	};
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -108,6 +151,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				customCliams,
 				logout,
 				loginWithCredential,
+				updateUserProfile,
+				updateUserPassword,
 			}}
 		>
 			{children}

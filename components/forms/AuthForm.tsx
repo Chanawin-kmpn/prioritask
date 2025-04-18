@@ -50,14 +50,18 @@ const AuthForm = <T extends FieldValues>({
 			const result = (await onSubmit(values)) as ActionResponse;
 			if (result.success) {
 				const { email, password } = values;
-				await auth?.loginWithCredential(email, password);
-				toast.success('Success', {
-					description:
-						formType === 'SIGN_UP'
-							? 'Signed up successfully'
-							: 'Signed in successfully',
-				});
-				window.location.href = ROUTES.HOME;
+				const response = await auth?.loginWithCredential(email, password);
+				if (response?.success) {
+					toast.success('Success', {
+						description:
+							formType === 'SIGN_UP'
+								? 'Signed up successfully'
+								: 'Signed in successfully',
+					});
+					window.location.href = ROUTES.HOME;
+				} else {
+					toast.error(response?.error?.message);
+				}
 			} else {
 				toast.error(`Error ${result?.status}`, {
 					description: result?.error?.message,

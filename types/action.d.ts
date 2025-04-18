@@ -24,3 +24,8 @@ interface GetUserParams {
 interface DeleteAccountParams {
 	id: string;
 }
+
+interface UpdateAccountParams {
+	id: string;
+	username?: string;
+}

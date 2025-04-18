@@ -47,15 +47,17 @@ const EditProfileForm = ({
 	});
 
 	const handleSubmit = async (values: z.infer<typeof EditProfileSchema>) => {
-		const { success, error } = await updateUser({
-			id,
-			username: values.username,
-		});
-		if (success) {
-			await auth?.updateUserProfile(values.username);
-			toast.success('Update username successfully');
-		} else {
-			toast.error(error?.message);
+		if (username !== values.username) {
+			const { success, error } = await updateUser({
+				id,
+				username: values.username,
+			});
+			if (success) {
+				await auth?.updateUserProfile(values.username);
+				toast.success('Update username successfully');
+			} else {
+				toast.error(error?.message);
+			}
 		}
 
 		if (values.currentPassword && values.newPassword) {
@@ -68,6 +70,9 @@ const EditProfileForm = ({
 				toast.error(response?.error?.message);
 			} else {
 				toast.success('Update password successfully');
+
+				form.resetField('currentPassword');
+				form.resetField('newPassword');
 			}
 		}
 

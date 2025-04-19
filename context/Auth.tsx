@@ -7,6 +7,8 @@ import {
 	createAccount,
 } from '@/lib/actions/auth.action';
 import { rateLimitCheck } from '@/lib/utils';
+import { ActionResponse, ErrorResponse } from '@/types/global';
+import { FieldValue } from 'firebase-admin/firestore';
 import {
 	EmailAuthProvider,
 	GoogleAuthProvider,
@@ -83,7 +85,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			if (result.user) {
 				const { uid, displayName, email, providerData, photoURL } = result.user;
 				const providerType = providerData[0]?.providerId;
-				const createdAt = result.user.metadata.creationTime;
 				// เรียกใช้ Server Action
 				await createAccount({
 					uid,
@@ -91,7 +92,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 					email,
 					providerType,
 					photoURL: photoURL ?? '',
-					createdAt,
 				});
 			}
 		} catch (error) {

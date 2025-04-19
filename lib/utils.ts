@@ -1,6 +1,5 @@
-import { firestore } from '@/firebase/server';
+import { ActionType } from '@/types/global';
 import { clsx, type ClassValue } from 'clsx';
-import { Timestamp } from 'firebase-admin/firestore';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 

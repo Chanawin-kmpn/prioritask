@@ -1,21 +1,17 @@
 'use client';
-import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '../ui/button';
+import TaskForm from '../forms/TaskForm';
+import { Task, TaskPriority } from '@/types/global';
 
 interface MatrixProps {
-	priorityType: string;
+	priorityType: TaskPriority;
 	customBorder: string;
-	dotColor?: string; // สีของ task ในแต่ละ quadrant (optional)
+	dotColor: string; // สีของ task ในแต่ละ quadrant (optional)
 }
 
-const Matrix = ({
-	priorityType,
-	customBorder,
-	dotColor = 'bg-green-500',
-}: MatrixProps) => {
+const Matrix = ({ priorityType, customBorder, dotColor }: MatrixProps) => {
 	// เก็บรายการ task ของ quadrant นี้
-	const [tasks, setTasks] = useState<Array<{ id: number }>>([]);
+	const [tasks, setTasks] = useState<Array<Task>>([]);
 
 	// ฟังก์ชันเพิ่ม task
 	const addTask = () => {
@@ -46,13 +42,7 @@ const Matrix = ({
 
 					{/* ช่องแรกว่างถัดจากงานล่าสุด */}
 					{index === tasks.length && tasks.length < 25 && (
-						<Button
-							variant="outline"
-							className="size-12 rounded-full"
-							onClick={addTask}
-						>
-							<Plus />
-						</Button>
+						<TaskForm addTask={addTask} priorityType={priorityType} />
 					)}
 					{/* ช่องอื่น ๆ ยังไม่ต้องแสดงอะไร */}
 				</div>

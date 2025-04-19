@@ -1,5 +1,5 @@
 import { z } from 'zod';
-
+const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
 const PasswordValidation = z
 	.string()
 	.min(6, { message: 'Password must be at least 6 characters long.' })
@@ -93,4 +93,24 @@ export const ForgotPasswordSchema = z.object({
 		.string()
 		.min(1, { message: 'Email is required' })
 		.email({ message: 'Please provide a valid email address.' }),
+});
+
+export const TaskFormSchema = z.object({
+	name: z.string().min(1, 'Task name is required'),
+	description: z.string().nullable().optional(),
+
+	// รับ Date (หรือ string แล้ว coerce เป็น Date) ตามที่ date‑picker ส่งมา
+	dueDate: z.coerce.date({ required_error: 'Please pick a date' }),
+
+	dueTime: z
+		.string()
+		.trim()
+		.optional()
+		.transform((v) => (v === '' ? null : v))
+		.refine((v) => !v || timeRegex.test(v), { message: 'Invalid time' })
+		.nullable(),
+
+	priority: z.enum(['do', 'schedule', 'delegate', 'delete']),
+	status: z.enum(['done', 'delete', 'on-progress', 'incomplete']),
+	notify: z.boolean(),
 });

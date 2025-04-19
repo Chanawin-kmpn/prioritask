@@ -32,3 +32,13 @@ interface UpdateAccountParams {
 interface ForgotPasswordParams {
 	email: string;
 }
+
+interface CreateTaskParams {
+	name: string;
+	description?: string | null;
+	dueDate: Date;
+	dueTime?: string | null;
+	priority: TaskPriority;
+	status: TaskStatus;
+	notify: boolean;
+}

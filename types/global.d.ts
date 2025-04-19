@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase-admin/firestore';
+
 type ActionResponse<T = null> = {
 	success: boolean; //* ถ้า success แล้ว data เป็นอย่างไร
 	data?: T;
@@ -18,3 +20,20 @@ interface RouteParams {
 }
 
 type ActionType = 'PROFILE_UPDATE' | 'PASSWORD_CHANGE' | 'PASSWORD_RESET';
+type TaskStatus = 'done' | 'delete' | 'on-progress' | 'incomplete';
+type TaskPriority = 'do' | 'schedule' | 'delegate' | 'delete';
+
+interface Task {
+	id?: string;
+	userId: string;
+	name: string;
+	description?: string | null;
+	dueDate: Date;
+	dueTime?: string | null;
+	priority: TaskPriority;
+	status: TaskStatus;
+	notify: boolean;
+
+	createdAt: Timestamp;
+	updatedAt: Timestamp;
+}

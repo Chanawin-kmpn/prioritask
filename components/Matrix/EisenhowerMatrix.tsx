@@ -14,22 +14,22 @@ const EisenhowerMatrix = () => {
 			</div>
 			<div className="grid w-fit grid-cols-2 justify-center">
 				<Matrix
-					priorityType="Do"
+					priorityType="do"
 					customBorder="border-r border-b border-t-[1px] border-l-[1px] border-t-gray-100 border-l-gray-100"
 					dotColor="bg-do"
 				/>
 				<Matrix
-					priorityType="Schedule"
+					priorityType="schedule"
 					customBorder="border-l border-b border-t-[1px] border-r-[1px] border-t-gray-100 border-r-gray-100"
 					dotColor="bg-schedule"
 				/>
 				<Matrix
-					priorityType="Delegate"
+					priorityType="delegate"
 					customBorder="border-r border-t border-b-[1px] border-l-[1px] border-b-gray-100 border-l-gray-100"
 					dotColor="bg-delegate"
 				/>
 				<Matrix
-					priorityType="Delete"
+					priorityType="delete"
 					customBorder="border-l border-t border-b-[1px] border-r-[1px] border-b-gray-100 border-r-gray-100"
 					dotColor="bg-delete"
 				/>

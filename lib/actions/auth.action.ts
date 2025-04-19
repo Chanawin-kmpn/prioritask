@@ -17,7 +17,6 @@ import handleError from '@/handler/error';
 import { NotFoundError } from '../http-errors';
 import { FirebaseError } from 'firebase/app';
 import { error } from 'console';
-import * as admin from 'firebase-admin';
 import {
 	AuthCredentials,
 	GetUserParams,
@@ -27,6 +26,19 @@ import {
 } from '@/types/action';
 import { revalidatePath } from 'next/cache';
 import ROUTES from '@/constants/routes';
+import { ActionResponse, ErrorResponse } from '@/types/global';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+
+const normalize = (obj: any): any => {
+	if (obj instanceof Timestamp) return obj.toMillis();
+	if (Array.isArray(obj)) return obj.map(normalize);
+	if (obj && typeof obj === 'object') {
+		return Object.fromEntries(
+			Object.entries(obj).map(([k, v]) => [k, normalize(v)])
+		);
+	}
+	return obj;
+};
 
 export const removeToken = async () => {
 	const cookiesStore = await cookies();
@@ -78,11 +90,9 @@ export const createAccount = async (userData: {
 	email: string | null;
 	providerType: string;
 	photoURL: string | undefined;
-	createdAt: string | undefined;
 }): Promise<ActionResponse> => {
 	try {
-		const { uid, displayName, email, providerType, photoURL, createdAt } =
-			userData;
+		const { uid, displayName, email, providerType, photoURL } = userData;
 
 		if (!uid || !email) {
 			throw new Error('ข้อมูลผู้ใช้ไม่ครบถ้วน');
@@ -92,6 +102,8 @@ export const createAccount = async (userData: {
 
 		if (!userDoc.exists) {
 			// สร้างเฉพาะเมื่อยังไม่มีข้อมูลผู้ใช้
+
+			const now = FieldValue.serverTimestamp();
 			await firestore
 				.collection('users')
 				.doc(uid)
@@ -99,7 +111,7 @@ export const createAccount = async (userData: {
 					uid,
 					username: displayName,
 					email,
-					createdAt,
+					createdAt: now,
 					providerType,
 					photoURL: photoURL ?? '',
 				});
@@ -168,7 +180,6 @@ export const signUpWithCredentials = async (
 
 		if (userRecord) {
 			const { uid, email, displayName, photoURL, providerData } = userRecord;
-			const createdAt = userRecord.metadata.creationTime;
 			const providerType = providerData[0]?.providerId;
 			await createAccount({
 				uid,
@@ -176,7 +187,6 @@ export const signUpWithCredentials = async (
 				displayName: displayName ?? null,
 				providerType,
 				photoURL,
-				createdAt,
 			});
 		}
 
@@ -255,10 +265,12 @@ export const getUserById = async (
 		// ใช้ .data() เพื่อดึงข้อมูลจาก DocumentSnapshot
 		const userData = userDoc.data();
 
+		const user = normalize(userData);
+
 		return {
 			success: true,
 			data: {
-				user: JSON.parse(JSON.stringify(userData)),
+				user,
 			},
 		};
 	} catch (error) {

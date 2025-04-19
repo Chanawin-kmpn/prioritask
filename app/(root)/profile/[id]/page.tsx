@@ -1,5 +1,6 @@
 import ProfileDetail from '@/components/profile/ProfileDetail';
 import { getUserById } from '@/lib/actions/auth.action';
+import { RouteParams } from '@/types/global';
 import { redirect } from 'next/navigation';
 import React, { cache } from 'react';
 import { toast } from 'sonner';
@@ -20,6 +21,8 @@ const ProfilePage = async ({ params }: RouteParams) => {
 
 	const { uid, username, email, providerType, photoURL, createdAt } =
 		data?.user! || {};
+
+	console.log(data);
 
 	return (
 		<div className="space-y-8 py-32">

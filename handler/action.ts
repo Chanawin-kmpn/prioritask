@@ -52,7 +52,7 @@ async function action<T>({
 			}
 
 			// ตรวจสอบความถูกต้องของ token
-			const decodedToken = await auth.verifySessionCookie(sessionCookie, true);
+			const decodedToken = await auth.verifyIdToken(sessionCookie, true);
 
 			// รับข้อมูลผู้ใช้
 			const firebaseUser = await auth.getUser(decodedToken.uid);

@@ -1,5 +1,9 @@
-import { ReactNode } from 'react';
+import EisenhowerMatrix from '@/components/Matrix/EisenhowerMatrix';
 
-export default function Home({ children }: { children: ReactNode }) {
-	return <main className="bg-light200_dark100">Home Page</main>;
+export default function Home() {
+	return (
+		<main className="bg-light200_dark100 flex h-full justify-center py-32">
+			<EisenhowerMatrix />
+		</main>
+	);
 }

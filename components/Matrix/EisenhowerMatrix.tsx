@@ -16,18 +16,22 @@ const EisenhowerMatrix = () => {
 				<Matrix
 					priorityType="Do"
 					customBorder="border-r border-b border-t-[1px] border-l-[1px] border-t-gray-100 border-l-gray-100"
+					dotColor="bg-do"
 				/>
 				<Matrix
 					priorityType="Schedule"
 					customBorder="border-l border-b border-t-[1px] border-r-[1px] border-t-gray-100 border-r-gray-100"
+					dotColor="bg-schedule"
 				/>
 				<Matrix
 					priorityType="Delegate"
 					customBorder="border-r border-t border-b-[1px] border-l-[1px] border-b-gray-100 border-l-gray-100"
+					dotColor="bg-delegate"
 				/>
 				<Matrix
 					priorityType="Delete"
 					customBorder="border-l border-t border-b-[1px] border-r-[1px] border-b-gray-100 border-r-gray-100"
+					dotColor="bg-delete"
 				/>
 			</div>
 			<div className="absolute bottom-0 left-0 flex w-full max-w-[1000px] origin-top-left -rotate-90 text-center">

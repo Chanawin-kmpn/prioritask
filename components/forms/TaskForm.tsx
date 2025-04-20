@@ -1,3 +1,4 @@
+'use client';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar1Icon, Clock, ClockIcon, Plus, X } from 'lucide-react';
+import { Calendar1Icon, ClockIcon, Plus, X } from 'lucide-react';
 import {
 	Form,
 	FormField,
@@ -31,7 +32,6 @@ import {
 	PopoverTrigger,
 	PopoverContent,
 } from '@/components/ui/popover';
-import dayjs from 'dayjs';
 import { format, addDays } from 'date-fns';
 import {
 	Select,
@@ -73,16 +73,12 @@ export default function TaskForm({
 	});
 
 	const onSubmit = async (values: z.infer<typeof TaskFormSchema>) => {
-		console.log(values);
-		console.log(typeof values.dueDate);
-
 		const { success, data, error } = await createTask(values);
 
 		if (!success) {
 			toast.error(`${error?.message}. Please login first.`);
 			return;
 		}
-		console.log(data);
 		toast.success('Create task successful!', {
 			description:
 				'🎯 Task locked and loaded! Your productivity is on fire today!  ',

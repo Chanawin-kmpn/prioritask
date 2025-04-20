@@ -1,5 +1,3 @@
-'use client';
-import { useState } from 'react';
 import TaskForm from '../forms/TaskForm';
 import { Task, TaskPriority } from '@/types/global';
 
@@ -7,44 +5,36 @@ interface MatrixProps {
 	priorityType: TaskPriority;
 	customBorder: string;
 	dotColor: string; // สีของ task ในแต่ละ quadrant (optional)
+	tasks: Task[];
 }
-
-const Matrix = ({ priorityType, customBorder, dotColor }: MatrixProps) => {
-	// เก็บรายการ task ของ quadrant นี้
-	const [tasks, setTasks] = useState<Array<Task>>([]);
-
-	// ฟังก์ชันเพิ่ม task
-	const addTask = () => {
-		if (tasks.length >= 25) return; // เต็มแล้ว ไม่เพิ่ม
-		setTasks([...tasks, { id: Date.now() }]);
-	};
-
+// ดึง task มาเฉพาะที่ตรงกับ priorityType
+const Matrix = ({
+	priorityType,
+	customBorder,
+	dotColor,
+	tasks,
+}: MatrixProps) => {
+	// การเพิ่มงานจริงควรเรียก action createTask()
 	return (
 		<div
 			className={`relative grid w-fit grid-cols-5 grid-rows-5 ${customBorder}`}
 		>
-			{/* ข้อความเบลอสีเทาตรงกลาง */}
-			<p className="pointer-events-none absolute inset-0 flex items-center justify-center text-7xl text-gray-100">
+			<p className="pointer-events-none absolute inset-0 flex items-center justify-center text-7xl text-gray-100/50 uppercase">
 				{priorityType}
 			</p>
 
-			{Array.from({ length: 25 }).map((_, index) => (
+			{Array.from({ length: 25 }).map((_, i) => (
 				<div
-					key={index}
+					key={i}
 					className="z-10 flex size-[100px] items-center justify-center border border-gray-100"
 				>
-					{/* ช่องที่มี task แล้ว */}
-					{index < tasks.length && (
-						<div
-							className={`size-12 rounded-full ${dotColor} border-dark-100 dark:border-light-100 border`}
-						/>
+					{i < tasks.length && (
+						<div className={`size-12 rounded-full ${dotColor} border`} />
 					)}
 
-					{/* ช่องแรกว่างถัดจากงานล่าสุด */}
-					{index === tasks.length && tasks.length < 25 && (
-						<TaskForm addTask={addTask} priorityType={priorityType} />
+					{i === tasks.length && tasks.length < 25 && (
+						<TaskForm priorityType={priorityType} />
 					)}
-					{/* ช่องอื่น ๆ ยังไม่ต้องแสดงอะไร */}
 				</div>
 			))}
 		</div>

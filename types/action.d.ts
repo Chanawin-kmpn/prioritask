@@ -1,4 +1,5 @@
 import { User } from 'firebase/auth';
+import { Task } from './global';
 
 interface AuthCredentials {
 	username: string;
@@ -14,6 +15,7 @@ interface Account {
 	photoURL: string;
 	providerType: string;
 	createdAt: Date;
+	task: Task[];
 }
 
 interface GetUserParams {

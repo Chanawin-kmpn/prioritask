@@ -6,6 +6,7 @@ import handleError from '@/handler/error';
 import { CreateTaskParams } from '@/types/action';
 import { ActionResponse, ErrorResponse, Task } from '@/types/global';
 import { TaskFormSchema } from '@/validations/validations';
+import { UnauthorizedError } from '../http-errors';
 
 export async function createTask(
 	params: CreateTaskParams
@@ -26,6 +27,12 @@ export async function createTask(
 
 	try {
 		const now = FieldValue.serverTimestamp();
+		if (!userId) {
+			return {
+				success: false,
+				error: { message: 'Unauthorized' },
+			};
+		}
 		const task = await firestore.collection('tasks').add({
 			userId,
 			name,
@@ -38,9 +45,14 @@ export async function createTask(
 			createdAt: now,
 			updatedAt: now,
 		});
+		await firestore
+			.collection('users')
+			.doc(userId)
+			.update({
+				tasks: FieldValue.arrayUnion(task.id), //เป็นวิธีมาตรฐานของ Firestore ในการ push ค่าเข้า array โดยไม่สร้าง duplicated write / race condition
+			});
 
 		await task.update({ id: task.id });
-
 		return { success: true, data: JSON.parse(JSON.stringify(task)) };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;

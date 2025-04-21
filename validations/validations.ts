@@ -115,7 +115,15 @@ export const TaskFormSchema = z.object({
 	notify: z.boolean(),
 });
 
+export const CreateTaskSchema = TaskFormSchema.extend({
+	userId: z.string().optional(),
+});
+
 export const GetTasksSchema = z.object({
 	priority: z.enum(['do', 'schedule', 'delegate', 'delete']).optional(),
 	status: z.enum(['complete', 'incomplete']).optional(),
+});
+
+export const GetTasksByUserSchema = z.object({
+	userId: z.string(),
 });

@@ -45,18 +45,24 @@ import { Task, TaskPriority } from '@/types/global';
 import { TaskFormSchema } from '@/validations/validations';
 import { createTask } from '@/lib/actions/task.action';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/Auth';
 
 interface Props {
 	task?: Task;
 	priorityType: TaskPriority;
 	isEdit?: boolean;
+	setTasks: (prevTask: any) => void;
 }
 
 export default function TaskForm({
 	task,
 	priorityType,
 	isEdit = false,
+	setTasks,
 }: Props) {
+	const auth = useAuth();
+	const user = auth?.currentUser!;
+
 	const defaultVals: z.infer<typeof TaskFormSchema> = {
 		name: task?.name ?? '',
 		description: task?.description ?? '',
@@ -73,16 +79,31 @@ export default function TaskForm({
 	});
 
 	const onSubmit = async (values: z.infer<typeof TaskFormSchema>) => {
-		const { success, data, error } = await createTask(values);
+		const { success, data, error } = await createTask({
+			...values,
+			userId: user?.uid,
+		});
 
 		if (!success) {
 			toast.error(`${error?.message}. Please login first.`);
 			return;
 		}
-		toast.success('Create task successful!', {
-			description:
-				'🎯 Task locked and loaded! Your productivity is on fire today!  ',
-		});
+		if (success) {
+			if (!user) {
+				const existingTasks = JSON.parse(
+					localStorage.getItem('guestTasks') || '[]'
+				);
+				existingTasks.push(data); // data ควรเป็น task ที่ได้จากการสร้าง
+				localStorage.setItem('guestTasks', JSON.stringify(existingTasks));
+			}
+			console.log(data);
+			setTasks((prevTask: any) => [...prevTask, data]);
+
+			toast.success('Create task successful!', {
+				description:
+					'🎯 Task locked and loaded! Your productivity is on fire today!  ',
+			});
+		}
 	};
 
 	return (

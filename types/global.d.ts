@@ -25,7 +25,7 @@ type TaskPriority = 'do' | 'schedule' | 'delegate' | 'delete';
 
 interface Task {
 	id?: string;
-	userId: string;
+	userId?: string;
 	name: string;
 	description?: string | null;
 	dueDate: Date;
@@ -33,7 +33,8 @@ interface Task {
 	priority: TaskPriority;
 	status: TaskStatus;
 	notify: boolean;
+	isPublic?: boolean;
 
-	createdAt: Timestamp;
-	updatedAt: Timestamp;
+	createdAt: Timestamp | Date;
+	updatedAt: Timestamp | Date;
 }

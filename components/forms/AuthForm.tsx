@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import ROUTES from '@/constants/routes';
 import { useAuth } from '@/context/Auth';
+import { ActionResponse } from '@/types/global';
 
 interface AuthFormProps<T extends FieldValues> {
 	schema: ZodType<T>;

@@ -43,4 +43,9 @@ interface CreateTaskParams {
 	priority: TaskPriority;
 	status: TaskStatus;
 	notify: boolean;
+	userId?: string;
+}
+
+interface GetTaskByUserParams {
+	userId: string;
 }

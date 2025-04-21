@@ -1,20 +1,46 @@
+'use client';
+import React, { useEffect, useState } from 'react';
 import TaskForm from '../forms/TaskForm';
 import { Task, TaskPriority } from '@/types/global';
+import { useRouter } from 'next/navigation';
 
 interface MatrixProps {
 	priorityType: TaskPriority;
 	customBorder: string;
 	dotColor: string; // สีของ task ในแต่ละ quadrant (optional)
 	tasks: Task[];
+	userId: string | undefined;
 }
+
 // ดึง task มาเฉพาะที่ตรงกับ priorityType
 const Matrix = ({
 	priorityType,
 	customBorder,
 	dotColor,
-	tasks,
+	tasks: initialTasks,
+	userId,
 }: MatrixProps) => {
-	// การเพิ่มงานจริงควรเรียก action createTask()
+	const router = useRouter();
+	const [tasks, setTasks] = useState<Task[]>(initialTasks);
+
+	useEffect(() => {
+		// อัปเดต tasks กับ initialTasks เมื่อ component ได้รับการ mount
+		setTasks(initialTasks);
+	}, [initialTasks]); // ใช้ initialTasks เป็น dependency
+
+	useEffect(() => {
+		// ตรวจสอบว่าผู้ใช้เป็น guest และไม่ได้มี task
+		if (userId === 'guest' && tasks.length === 0) {
+			const guestTasks = JSON.parse(localStorage.getItem('guestTasks') || '[]');
+
+			// กรอง guestTasks โดย priorityType
+			const filteredGuestTasks = guestTasks.filter(
+				(task: Task) => task.priority === priorityType
+			);
+			setTasks(filteredGuestTasks); // อัปเดตสถานะ tasks ด้วย guestTasks ที่ถูกกรอง
+		}
+	}, [userId, tasks.length, priorityType]); // เพิ่ม priorityType เป็น dependency
+
 	return (
 		<div
 			className={`relative grid w-fit grid-cols-5 grid-rows-5 ${customBorder}`}
@@ -33,7 +59,7 @@ const Matrix = ({
 					)}
 
 					{i === tasks.length && tasks.length < 25 && (
-						<TaskForm priorityType={priorityType} />
+						<TaskForm priorityType={priorityType} setTasks={setTasks} />
 					)}
 				</div>
 			))}

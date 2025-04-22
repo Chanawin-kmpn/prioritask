@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import TaskForm from '../forms/TaskForm';
 import { Task, TaskPriority } from '@/types/global';
 import { useRouter } from 'next/navigation';
+import { getLocalStorageWithExpiry } from '@/lib/utils';
 
 interface MatrixProps {
 	priorityType: TaskPriority;
@@ -30,7 +31,7 @@ const Matrix = ({
 	useEffect(() => {
 		// ตรวจสอบว่าผู้ใช้เป็น guest และไม่ได้มี task
 		if (isGuest && tasks.length === 0) {
-			const guestTasks = JSON.parse(localStorage.getItem('guestTasks') || '[]');
+			const guestTasks = getLocalStorageWithExpiry('guestTasks');
 
 			// กรอง guestTasks โดย priorityType
 			const filteredGuestTasks = guestTasks.filter(

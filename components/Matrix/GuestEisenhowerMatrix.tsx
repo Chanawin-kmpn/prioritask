@@ -1,15 +1,7 @@
 'use client';
 import React from 'react';
-import { Task } from '@/types/global';
 import Matrix from './Matrix';
 import { useAuth } from '@/context/Auth';
-
-interface FilterPriority {
-	do: Task[];
-	schedule: Task[];
-	delegate: Task[];
-	delete: Task[];
-}
 
 const GuestEisenhowerMatrix = () => {
 	const auth = useAuth();

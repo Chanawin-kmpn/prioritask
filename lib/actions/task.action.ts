@@ -36,6 +36,8 @@ export async function createTask(
 	} = validationResult.params!;
 
 	const now = FieldValue.serverTimestamp();
+	const expirationDate = new Date();
+	expirationDate.setDate(expirationDate.getDate() + 7);
 
 	try {
 		let taskRef;
@@ -72,6 +74,7 @@ export async function createTask(
 				notify,
 				createdAt: now,
 				updatedAt: now,
+				expirationDate: expirationDate.toISOString(),
 			};
 
 			return { success: true, data: JSON.parse(JSON.stringify(guestTask)) };

@@ -15,9 +15,7 @@ export default async function Home() {
 		// ถ้าไม่มี session cookie ให้ return GuestEisenhowerMatrix
 		return (
 			<div className="bg-light200_dark100 flex h-full justify-center py-32">
-				<Suspense fallback={<Loading />}>
-					<GuestEisenhowerMatrix />
-				</Suspense>
+				<GuestEisenhowerMatrix />
 			</div>
 		);
 	}
@@ -35,9 +33,7 @@ export default async function Home() {
 
 	return (
 		<div className="bg-light200_dark100 flex h-full justify-center py-32">
-			<Suspense fallback={<Loading />}>
-				<EisenhowerMatrix />
-			</Suspense>
+			<EisenhowerMatrix />
 		</div>
 	);
 }

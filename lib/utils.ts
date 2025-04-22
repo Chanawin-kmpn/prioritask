@@ -66,3 +66,41 @@ export const rateLimitCheck = (
 		return { limited: false }; // อนุญาตให้ทำต่อไปได้หากมีข้อผิดพลาด
 	}
 };
+
+// ฟังก์ชันเก็บข้อมูลลง localStorage พร้อมกับเวลาหมดอายุ
+export function setLocalStorageWithExpiry(
+	key: string,
+	value: any,
+	expiryInDays: number
+) {
+	const now = new Date();
+
+	// สร้างออบเจ็กต์ที่จะเก็บข้อมูลพร้อมกับ timestamp
+	const item = {
+		value: value,
+		expiry: now.getTime() + expiryInDays * 24 * 60 * 60 * 1000, // คำนวณเวลาหมดอายุ
+	};
+
+	localStorage.setItem(key, JSON.stringify(item));
+}
+
+export function getLocalStorageWithExpiry(key: string) {
+	const itemStr = localStorage.getItem(key);
+
+	// ถ้าไม่มีข้อมูลจะส่งออก null
+	if (!itemStr) {
+		return [];
+	} // คืนค่าเป็น array ว่าง
+
+	const item = JSON.parse(itemStr);
+	const now = new Date();
+
+	// ตรวจสอบว่าข้อมูลหมดอายุหรือยัง
+	if (now.getTime() > item.expirationDate) {
+		// หากหมดอายุแล้วให้นำข้อมูลออกจาก localStorage
+		localStorage.removeItem(key);
+		return []; // คืนค่าเป็น array ว่างเพราะหมดอายุ
+	}
+
+	return item; // คืนค่า value ถ้ายังไม่หมดอายุ
+}

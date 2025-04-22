@@ -124,7 +124,7 @@ export async function getTaskByUser(
 		const tasks: Task[] = query.docs.map((data) => ({
 			...(data.data() as Task),
 		}));
-
+		revalidatePath(ROUTES.HOME);
 		return { success: true, data: JSON.parse(JSON.stringify(tasks)) };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;

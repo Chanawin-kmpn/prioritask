@@ -22,8 +22,6 @@ const ProfilePage = async ({ params }: RouteParams) => {
 	const { uid, username, email, providerType, photoURL, createdAt } =
 		data?.user! || {};
 
-	console.log(data);
-
 	return (
 		<div className="space-y-8 py-32">
 			<h1 className="text-dark100_light200">Account</h1>

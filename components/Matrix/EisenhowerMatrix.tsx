@@ -1,9 +1,9 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import Matrix from './Matrix';
+import React, { Suspense, useEffect, useState } from 'react';
 import { getTaskByUser } from '@/lib/actions/task.action';
 import { Task } from '@/types/global';
 import { auth } from '@/firebase/client';
+import Matrix from './Matrix';
 
 interface FilterPriority {
 	do: Task[];
@@ -22,23 +22,25 @@ const EisenhowerMatrix = () => {
 	});
 
 	useEffect(() => {
-		const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
-			console.log(currentUser);
+		const savedFilter = localStorage.getItem('filterPriority');
+		if (savedFilter) {
+			setFilterPriority(JSON.parse(savedFilter)); // โหลดข้อมูลจาก localStorage
+		}
+	}, []);
 
+	useEffect(() => {
+		const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
 			if (currentUser) {
 				const { uid } = currentUser;
 				const { success, data, error } = await getTaskByUser({ userId: uid });
 
-				console.log('Fetched Data:', data); // ดูข้อมูลที่ดึงมา
-
 				if (!success) {
-					console.log('Error', error?.message);
+					console.error('Error', error?.message);
 					return;
 				}
 
 				setUser({ uid });
 
-				// จัดการ filterTask ใหม่
 				const newFilterPriority = {
 					do: data!.filter((task) => task.priority === 'do'),
 					schedule: data!.filter((task) => task.priority === 'schedule'),
@@ -47,26 +49,19 @@ const EisenhowerMatrix = () => {
 				};
 
 				setFilterPriority(newFilterPriority);
-				console.log('New Filter Priority:', newFilterPriority); // ดู filter priority ใหม่
+				localStorage.setItem(
+					'filterPriority',
+					JSON.stringify(newFilterPriority)
+				); // เก็บข้อมูลใน localStorage
 			} else {
-				// ผู้ใช้ไม่ได้ล็อกอิน
-				setUser({ uid: 'guest' });
+				setUser(null);
 				setFilterPriority({ do: [], schedule: [], delegate: [], delete: [] });
+				localStorage.removeItem('filterPriority'); // ลบข้อมูลเมื่อผู้ใช้ล็อกเอาท์
 			}
 		});
 
-		// ทำความสะอาด listener เมื่อ component จะถูก unmount
 		return () => unsubscribe();
 	}, []);
-
-	// useEffect(() => {
-	// 	console.log('Current User:', user);
-	// }, [user]);
-
-	// // ติดตามการเปลี่ยนแปลง filterPriority
-	// useEffect(() => {
-	// 	console.log('Current Filter Priority:', filterPriority);
-	// }, [filterPriority]);
 
 	return (
 		<div className="relative p-14">

@@ -96,7 +96,6 @@ export default function TaskForm({
 				existingTasks.push(data); // data ควรเป็น task ที่ได้จากการสร้าง
 				localStorage.setItem('guestTasks', JSON.stringify(existingTasks));
 			}
-			console.log(data);
 			setTasks((prevTask: any) => [...prevTask, data]);
 
 			toast.success('Create task successful!', {

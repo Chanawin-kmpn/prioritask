@@ -85,7 +85,7 @@ const DeleteDialog = ({ id, username }: { id: string; username: string }) => {
 					<DialogClose asChild>
 						<Button
 							variant="outline"
-							className="cancle-btn w-fit self-end"
+							className="cancel-btn w-fit self-end"
 							size="lg"
 						>
 							<X /> Cancel

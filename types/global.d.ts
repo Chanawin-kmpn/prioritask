@@ -23,6 +23,13 @@ type ActionType = 'PROFILE_UPDATE' | 'PASSWORD_CHANGE' | 'PASSWORD_RESET';
 type TaskStatus = 'done' | 'delete' | 'on-progress' | 'incomplete';
 type TaskPriority = 'do' | 'schedule' | 'delegate' | 'delete';
 
+interface FilterPriority {
+	do: Task[];
+	schedule: Task[];
+	delegate: Task[];
+	delete: Task[];
+}
+
 interface Task {
 	id?: string;
 	userId?: string;

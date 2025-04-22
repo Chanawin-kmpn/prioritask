@@ -46,12 +46,15 @@ import { TaskFormSchema } from '@/validations/validations';
 import { createTask } from '@/lib/actions/task.action';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/Auth';
+import { LIMIT_GUEST_TASK } from '@/constants/constants';
 
 interface Props {
 	task?: Task;
 	priorityType: TaskPriority;
 	isEdit?: boolean;
 	setTasks: (prevTask: any) => void;
+	currentTasksCount?: number;
+	handleOpenDialog?: (priorityType: string, taskCount: number) => void;
 }
 
 export default function TaskForm({
@@ -59,6 +62,8 @@ export default function TaskForm({
 	priorityType,
 	isEdit = false,
 	setTasks,
+	currentTasksCount,
+	handleOpenDialog,
 }: Props) {
 	const auth = useAuth();
 	const user = auth?.currentUser!;
@@ -90,6 +95,12 @@ export default function TaskForm({
 		}
 		if (success) {
 			if (!user) {
+				if (currentTasksCount && handleOpenDialog) {
+					if (currentTasksCount >= LIMIT_GUEST_TASK) {
+						handleOpenDialog(priorityType, currentTasksCount);
+						return;
+					}
+				}
 				const existingTasks = JSON.parse(
 					localStorage.getItem('guestTasks') || '[]'
 				);
@@ -277,7 +288,7 @@ export default function TaskForm({
 							<DialogClose asChild>
 								<Button
 									variant="outline"
-									className="cancle-btn w-fit self-end"
+									className="cancel-btn w-fit self-end"
 									size="lg"
 									onClick={() => form.reset()}
 								>

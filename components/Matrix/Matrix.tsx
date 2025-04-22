@@ -11,6 +11,7 @@ interface MatrixProps {
 	dotColor: string; // สีของ task ในแต่ละ quadrant (optional)
 	tasks: Task[];
 	isGuest?: boolean;
+	handleOpenDialog?: (priorityType: string, taskCount: number) => void;
 }
 
 // ดึง task มาเฉพาะที่ตรงกับ priorityType
@@ -20,6 +21,7 @@ const Matrix = ({
 	dotColor,
 	tasks: initialTasks,
 	isGuest,
+	handleOpenDialog,
 }: MatrixProps) => {
 	const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
@@ -59,7 +61,12 @@ const Matrix = ({
 					)}
 
 					{i === tasks.length && tasks.length < 25 && (
-						<TaskForm priorityType={priorityType} setTasks={setTasks} />
+						<TaskForm
+							priorityType={priorityType}
+							setTasks={setTasks}
+							currentTasksCount={tasks.length}
+							handleOpenDialog={handleOpenDialog}
+						/>
 					)}
 				</div>
 			))}

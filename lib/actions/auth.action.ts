@@ -352,7 +352,7 @@ export const deleteAccount = async (
 		schema: DeleteAccountSchema,
 	});
 
-	if (validationResult instanceof error) {
+	if (validationResult instanceof Error) {
 		return handleError(validationResult) as ErrorResponse;
 	}
 
@@ -366,6 +366,15 @@ export const deleteAccount = async (
 			.get();
 
 		limitsSnapshot.forEach((doc) => {
+			batch.delete(doc.ref);
+		});
+
+		const tasksSnapshot = await firestore
+			.collection('tasks')
+			.where('userId', '==', id)
+			.get();
+
+		tasksSnapshot.forEach((doc) => {
 			batch.delete(doc.ref);
 		});
 

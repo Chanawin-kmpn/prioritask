@@ -1,13 +1,43 @@
 import EisenhowerMatrix from '@/components/matrix/EisenhowerMatrix';
 import { Suspense } from 'react';
 import Loading from './loading';
+import GuestEisenhowerMatrix from '@/components/matrix/GuestEisenhowerMatrix';
+import { auth } from '@/firebase/server';
+import { cookies } from 'next/headers';
+import { UnauthorizedError } from '@/lib/http-errors';
 
-export default function Home() {
+export default async function Home() {
+	const cookieStore = await cookies();
+	const sessionCookie = cookieStore.get('firebaseAuthToken')?.value;
+
+	// ตรวจสอบว่ามี session cookie หรือไม่
+	if (!sessionCookie) {
+		// ถ้าไม่มี session cookie ให้ return GuestEisenhowerMatrix
+		return (
+			<div className="bg-light200_dark100 flex h-full justify-center py-32">
+				<Suspense fallback={<Loading />}>
+					<GuestEisenhowerMatrix />
+				</Suspense>
+			</div>
+		);
+	}
+
+	// ตรวจสอบความถูกต้องของ token
+	let decodedToken;
+	try {
+		decodedToken = await auth.verifyIdToken(sessionCookie, true);
+	} catch (error) {
+		// หากตรวจสอบไม่สำเร็จ ให้จัดการข้อผิดพลาด เช่น redirect หรือแสดงข้อความ
+		throw new UnauthorizedError('Token verification failed');
+	}
+
+	// รับข้อมูลผู้ใช้
+
 	return (
-		<main className="bg-light200_dark100 flex h-full justify-center py-32">
+		<div className="bg-light200_dark100 flex h-full justify-center py-32">
 			<Suspense fallback={<Loading />}>
 				<EisenhowerMatrix />
 			</Suspense>
-		</main>
+		</div>
 	);
 }

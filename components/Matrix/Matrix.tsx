@@ -9,7 +9,7 @@ interface MatrixProps {
 	customBorder: string;
 	dotColor: string; // สีของ task ในแต่ละ quadrant (optional)
 	tasks: Task[];
-	userId: string | undefined;
+	isGuest?: boolean;
 }
 
 // ดึง task มาเฉพาะที่ตรงกับ priorityType
@@ -18,9 +18,8 @@ const Matrix = ({
 	customBorder,
 	dotColor,
 	tasks: initialTasks,
-	userId,
+	isGuest,
 }: MatrixProps) => {
-	const router = useRouter();
 	const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
 	useEffect(() => {
@@ -30,7 +29,7 @@ const Matrix = ({
 
 	useEffect(() => {
 		// ตรวจสอบว่าผู้ใช้เป็น guest และไม่ได้มี task
-		if (userId === 'guest' && tasks.length === 0) {
+		if (isGuest && tasks.length === 0) {
 			const guestTasks = JSON.parse(localStorage.getItem('guestTasks') || '[]');
 
 			// กรอง guestTasks โดย priorityType
@@ -39,7 +38,7 @@ const Matrix = ({
 			);
 			setTasks(filteredGuestTasks); // อัปเดตสถานะ tasks ด้วย guestTasks ที่ถูกกรอง
 		}
-	}, [userId, tasks.length, priorityType]); // เพิ่ม priorityType เป็น dependency
+	}, [isGuest, tasks.length, priorityType]); // เพิ่ม priorityType เป็น dependency
 
 	return (
 		<div

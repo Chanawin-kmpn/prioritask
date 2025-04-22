@@ -1,8 +1,8 @@
+'use client';
 import React from 'react';
-import { getTaskByUser } from '@/lib/actions/task.action';
 import { Task } from '@/types/global';
 import Matrix from './Matrix';
-import { toast } from 'sonner';
+import { useAuth } from '@/context/Auth';
 
 interface FilterPriority {
 	do: Task[];
@@ -11,19 +11,11 @@ interface FilterPriority {
 	delete: Task[];
 }
 
-const EisenhowerMatrix = async () => {
-	const { success, data, error } = await getTaskByUser();
+const GuestEisenhowerMatrix = () => {
+	const auth = useAuth();
+	const isGuest = !auth?.currentUser;
 
-	if (!success) {
-		return null;
-	}
-
-	const filterPriority: FilterPriority = {
-		do: data!.filter((task) => task.priority === 'do'),
-		schedule: data!.filter((task) => task.priority === 'schedule'),
-		delegate: data!.filter((task) => task.priority === 'delegate'),
-		delete: data!.filter((task) => task.priority === 'delete'),
-	};
+	if (!isGuest) return null;
 
 	return (
 		<div className="relative p-14">
@@ -37,28 +29,32 @@ const EisenhowerMatrix = async () => {
 			</div>
 			<div className="grid w-fit grid-cols-2 justify-center">
 				<Matrix
+					isGuest={isGuest}
 					priorityType="do"
 					customBorder="border-r border-b border-t-[1px] border-l-[1px] border-t-gray-100 border-l-gray-100"
 					dotColor="bg-do"
-					tasks={filterPriority.do}
+					tasks={[]}
 				/>
 				<Matrix
+					isGuest={isGuest}
 					priorityType="schedule"
 					customBorder="border-l border-b border-t-[1px] border-r-[1px] border-t-gray-100 border-r-gray-100"
 					dotColor="bg-schedule"
-					tasks={filterPriority.schedule}
+					tasks={[]}
 				/>
 				<Matrix
+					isGuest={isGuest}
 					priorityType="delegate"
 					customBorder="border-r border-t border-b-[1px] border-l-[1px] border-b-gray-100 border-l-gray-100"
 					dotColor="bg-delegate"
-					tasks={filterPriority.delegate}
+					tasks={[]}
 				/>
 				<Matrix
+					isGuest={isGuest}
 					priorityType="delete"
 					customBorder="border-l border-t border-b-[1px] border-r-[1px] border-b-gray-100 border-r-gray-100"
 					dotColor="bg-delete"
-					tasks={filterPriority.delete}
+					tasks={[]}
 				/>
 			</div>
 			<div className="absolute bottom-0 left-0 flex w-full max-w-[1000px] origin-top-left -rotate-90 text-center">
@@ -73,4 +69,4 @@ const EisenhowerMatrix = async () => {
 	);
 };
 
-export default EisenhowerMatrix;
+export default GuestEisenhowerMatrix;

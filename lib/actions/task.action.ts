@@ -74,7 +74,7 @@ export async function createTask(
 				updatedAt: now,
 			};
 
-			taskRef = await firestore.collection('tasks').add(guestTask);
+			return { success: true, data: JSON.parse(JSON.stringify(guestTask)) };
 		}
 
 		// ดึงข้อมูล Task ที่สร้างขึ้น
@@ -92,13 +92,9 @@ export async function createTask(
 	}
 }
 
-export async function getTaskByUser(
-	params: GetTaskByUserParams
-): Promise<ActionResponse<Task[]>> {
+export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
 	const validationResult = await action({
-		params,
-		schema: GetTasksByUserSchema,
-		// authorize: true,
+		authorize: true,
 	});
 
 	if (validationResult instanceof Error) {
@@ -106,14 +102,7 @@ export async function getTaskByUser(
 	}
 
 	try {
-		const { userId } = validationResult.params!;
-
-		if (!userId) {
-			return {
-				success: false,
-				error: { message: 'Unauthorized' },
-			};
-		}
+		const userId = validationResult.user?.uid;
 
 		const query = await firestore
 			.collection('tasks')
@@ -124,7 +113,7 @@ export async function getTaskByUser(
 		const tasks: Task[] = query.docs.map((data) => ({
 			...(data.data() as Task),
 		}));
-		revalidatePath(ROUTES.HOME);
+		// revalidatePath(ROUTES.HOME);
 		return { success: true, data: JSON.parse(JSON.stringify(tasks)) };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;

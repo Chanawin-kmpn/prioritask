@@ -13,6 +13,7 @@ interface MatrixProps {
 	tasks: Task[];
 	isGuest?: boolean;
 	handleOpenDialog?: (priorityType: string, taskCount: number) => void;
+	userId?: string;
 }
 
 // ดึง task มาเฉพาะที่ตรงกับ priorityType
@@ -23,12 +24,13 @@ const Matrix = ({
 	tasks: initialTasks,
 	isGuest,
 	handleOpenDialog,
+	userId,
 }: MatrixProps) => {
 	const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
 	useEffect(() => {
 		// อัปเดต tasks กับ initialTasks เมื่อ component ได้รับการ mount
-		setTasks(initialTasks);
+		setTasks(initialTasks.filter((task) => task.status === 'on-progress'));
 	}, [initialTasks]); // ใช้ initialTasks เป็น dependency
 
 	useEffect(() => {
@@ -40,7 +42,9 @@ const Matrix = ({
 			const filteredGuestTasks = guestTasks.filter(
 				(task: Task) => task.priority === priorityType
 			);
-			setTasks(filteredGuestTasks); // อัปเดตสถานะ tasks ด้วย guestTasks ที่ถูกกรอง
+			setTasks(
+				filteredGuestTasks.filter((task: Task) => task.status === 'on-progress')
+			); // อัปเดตสถานะ tasks ด้วย guestTasks ที่ถูกกรอง
 		}
 	}, [isGuest, tasks.length, priorityType]); // เพิ่ม priorityType เป็น dependency
 
@@ -57,7 +61,13 @@ const Matrix = ({
 					key={i}
 					className="z-10 flex size-[100px] items-center justify-center border border-gray-100"
 				>
-					{i < tasks.length && <TaskCard dotColor={dotColor} task={tasks[i]} />}
+					{i < tasks.length && (
+						<TaskCard
+							userId={userId || ''}
+							dotColor={dotColor}
+							task={tasks[i]}
+						/>
+					)}
 
 					{i === tasks.length && tasks.length < 25 && (
 						<TaskForm

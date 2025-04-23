@@ -3,11 +3,20 @@ import { firestore } from '@/firebase/server';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import action from '@/handler/action';
 import handleError from '@/handler/error';
-import { CreateTaskParams, GetTaskByUserParams } from '@/types/action';
-import { ActionResponse, ErrorResponse, Task } from '@/types/global';
-import { CreateTaskSchema } from '@/validations/validations';
+import { CreateTaskParams, SetTaskToCompleteParams } from '@/types/action';
+import {
+	ActionResponse,
+	ErrorResponse,
+	Task,
+	TaskStatus,
+} from '@/types/global';
+import {
+	CreateTaskSchema,
+	SetTaskToCompleteSchema,
+} from '@/validations/validations';
 import { revalidatePath } from 'next/cache';
 import ROUTES from '@/constants/routes';
+import { EXPIRATION_TASK_DATE } from '@/constants/constants';
 
 const normalize = (obj: any): any => {
 	if (obj instanceof Timestamp) return obj.toMillis();
@@ -72,6 +81,7 @@ export async function createTask(
 				});
 		} else {
 			const guestTask = {
+				id: 'guest-' + Date.now(),
 				isPublic: true,
 				name,
 				description,
@@ -91,7 +101,9 @@ export async function createTask(
 		// ดึงข้อมูล Task ที่สร้างขึ้น
 		const createdTask = await taskRef.get();
 		const taskData = createdTask.data();
-
+		await taskRef.update({
+			id: taskRef.id,
+		});
 		revalidatePath(ROUTES.HOME);
 		// คืนค่าข้อมูล Task ที่รวมทั้ง id ที่ได้จาก Firestore
 		return {
@@ -122,24 +134,85 @@ export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
 			.get();
 
 		const tasks: Task[] = query.docs.map((data) => ({
+			// id: data.id, // เพิ่ม ID เพื่อใช้ในการลบ
 			...(data.data() as Task),
 		}));
-		const normalizeTasks = normalize(tasks);
-		// revalidatePath(ROUTES.HOME);
+
+		// ตรวจสอบวันหมดอายุ
+		const currentDate = new Date();
+
+		// Task ที่หมดอายุ
+		const expiredTasks = tasks.filter((task) => {
+			return task.expirationDate
+				? new Date(task.expirationDate) < currentDate
+				: false;
+		});
+
+		// Task ที่มีสถานะเป็น "complete", "delete", หรือ "incomplete" ที่หมดอายุ
+		const tasksToDelete = expiredTasks.filter((task) => {
+			return (
+				task.status === ('complete' as TaskStatus) ||
+				task.status === ('delete' as TaskStatus) ||
+				task.status === ('incomplete' as TaskStatus)
+			);
+		});
+
+		// ลบ Task ที่หมดอายุ
+		const deletePromises = tasksToDelete.map((task) => {
+			return firestore.collection('tasks').doc(task.id).delete();
+		});
+		await Promise.all(deletePromises); // รอให้ Task ทั้งหมดถูกลบ
+
+		// กรอง Task ที่เหลือ จะเก็บ Task ที่ยังไม่หมดอายุและมีสถานะเป็น "on-process"
+		const remainingTasks = tasks.filter((task) => {
+			return !expiredTasks.some((expiredTask) => expiredTask.id === task.id);
+		});
+
+		const normalizeTasks = normalize(remainingTasks);
 		return { success: true, data: JSON.parse(JSON.stringify(normalizeTasks)) };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;
 	}
 }
 
-// export async function getTaskByLocalStorage(): Promise<ActionResponse<Task[]>> {
-// 	try {
-// 		const guestTasks = JSON.parse(localStorage.getItem('guestTasks') || '[]'); // ดึงข้อมูลจาก localStorage
-// 		return {
-// 			success: true,
-// 			data: guestTasks,
-// 		};
-// 	} catch (error) {
-// 		return handleError(error) as ErrorResponse;
-// 	}
-// }
+export async function setTaskToComplete(
+	params: SetTaskToCompleteParams
+): Promise<ActionResponse> {
+	const validationResult = await action({
+		params,
+		schema: SetTaskToCompleteSchema,
+	});
+
+	if (validationResult instanceof Error) {
+		return handleError(validationResult) as ErrorResponse;
+	}
+
+	const { taskId } = validationResult.params!;
+	const expirationDate = new Date();
+	expirationDate.setDate(expirationDate.getDate() + EXPIRATION_TASK_DATE);
+	try {
+		const taskSnapshot = await firestore
+			.collection('tasks')
+			.where('id', '==', taskId)
+			.get();
+
+		if (taskSnapshot.empty) {
+			return {
+				success: false,
+				error: {
+					message: 'Task not found!',
+				},
+			};
+		}
+
+		await firestore.collection('tasks').doc(taskId).update({
+			status: 'complete',
+			expirationDate,
+		});
+
+		revalidatePath(ROUTES.HOME);
+		return { success: true };
+	} catch (error) {
+		return handleError(error) as ErrorResponse;
+	}
+}

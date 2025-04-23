@@ -22,14 +22,55 @@ import {
 } from 'lucide-react';
 import PriorityInfo from '../PriorityInfo';
 import { Button } from '../ui/button';
+import { setTaskToComplete } from '@/lib/actions/task.action';
+import { toast } from 'sonner';
 
 interface TaskCardProps {
 	dotColor: string;
 	task: Task;
+	userId: string;
 }
 
-const TaskCard = ({ dotColor, task }: TaskCardProps) => {
-	console.log(task);
+const TaskCard = ({ dotColor, task, userId }: TaskCardProps) => {
+	const handleCompleteTask = async () => {
+		if (!task.id) {
+			console.error('Task ID is undefined');
+			return;
+		}
+
+		if (userId) {
+			const { success, error } = await setTaskToComplete({
+				taskId: task.id,
+				userId,
+			});
+
+			if (!success) {
+				toast.error('Error', {
+					description: error?.message,
+				});
+			}
+		} else {
+			updateLocalStorage(task.id, 'complete');
+			window.location.reload();
+		}
+		toast.success('Task marked as complete. You are not logged in.', {
+			description: `Task "${task.name}" has been successfully completed.`,
+		});
+	};
+
+	const updateLocalStorage = (taskId: string, newStatus: string) => {
+		const tasks = JSON.parse(localStorage.getItem('guestTasks')!) || [];
+		const updatedTasks = tasks.map((task: Task) => {
+			if (task.id === taskId) {
+				return {
+					...task,
+					status: newStatus, // Update the status
+				};
+			}
+			return task;
+		});
+		localStorage.setItem('guestTasks', JSON.stringify(updatedTasks));
+	};
 
 	return (
 		<HoverCard openDelay={300}>
@@ -83,6 +124,7 @@ const TaskCard = ({ dotColor, task }: TaskCardProps) => {
 						<Button
 							size="lg"
 							className="submit-btn bg-safe hover:bg-safe/80 w-fit self-end"
+							onClick={handleCompleteTask}
 						>
 							<CheckIcon />
 							Complete

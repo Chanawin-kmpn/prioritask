@@ -31,7 +31,7 @@ interface FilterPriority {
 }
 
 interface Task {
-	id?: string;
+	id: string;
 	userId?: string;
 	name: string;
 	description?: string | null;
@@ -41,6 +41,7 @@ interface Task {
 	status: TaskStatus;
 	notify: boolean;
 	isPublic?: boolean;
+	expirationDate?: Date;
 
 	createdAt: Timestamp | Date;
 	updatedAt: Timestamp | Date;

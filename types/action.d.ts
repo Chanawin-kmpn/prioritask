@@ -49,3 +49,8 @@ interface CreateTaskParams {
 interface GetTaskByUserParams {
 	userId: string;
 }
+
+interface SetTaskToCompleteParams {
+	taskId: string;
+	userId?: string;
+}

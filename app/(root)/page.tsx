@@ -22,8 +22,11 @@ export default async function Home() {
 
 	// ตรวจสอบความถูกต้องของ token
 	let decodedToken;
+	let userId;
 	try {
 		decodedToken = await auth.verifyIdToken(sessionCookie, true);
+		const user = await auth.getUser(decodedToken.uid);
+		userId = user.uid;
 	} catch (error) {
 		// หากตรวจสอบไม่สำเร็จ ให้จัดการข้อผิดพลาด เช่น redirect หรือแสดงข้อความ
 		throw new UnauthorizedError('Token verification failed');
@@ -33,7 +36,7 @@ export default async function Home() {
 
 	return (
 		<div className="bg-light200_dark100 flex h-full justify-center py-32">
-			<EisenhowerMatrix />
+			<EisenhowerMatrix userId={userId} />
 		</div>
 	);
 }

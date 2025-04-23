@@ -11,7 +11,7 @@ interface FilterPriority {
 	delete: Task[];
 }
 
-const EisenhowerMatrix = async () => {
+const EisenhowerMatrix = async ({ userId }: { userId: string }) => {
 	const { success, data, error } = await getTaskByUser();
 
 	if (!success) {
@@ -37,24 +37,28 @@ const EisenhowerMatrix = async () => {
 			</div>
 			<div className="grid w-fit grid-cols-2 justify-center">
 				<Matrix
+					userId={userId}
 					priorityType="do"
 					customBorder="border-r border-b border-t-[1px] border-l-[1px] border-t-gray-100 border-l-gray-100"
 					dotColor="bg-do"
 					tasks={filterPriority.do}
 				/>
 				<Matrix
+					userId={userId}
 					priorityType="schedule"
 					customBorder="border-l border-b border-t-[1px] border-r-[1px] border-t-gray-100 border-r-gray-100"
 					dotColor="bg-schedule"
 					tasks={filterPriority.schedule}
 				/>
 				<Matrix
+					userId={userId}
 					priorityType="delegate"
 					customBorder="border-r border-t border-b-[1px] border-l-[1px] border-b-gray-100 border-l-gray-100"
 					dotColor="bg-delegate"
 					tasks={filterPriority.delegate}
 				/>
 				<Matrix
+					userId={userId}
 					priorityType="delete"
 					customBorder="border-l border-t border-b-[1px] border-r-[1px] border-b-gray-100 border-r-gray-100"
 					dotColor="bg-delete"

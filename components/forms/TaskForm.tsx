@@ -74,7 +74,7 @@ export default function TaskForm({
 		dueDate: task?.dueDate ?? new Date(),
 		dueTime: task?.dueTime ?? '',
 		priority: task?.priority ?? priorityType,
-		status: task?.status ?? 'incomplete',
+		status: task?.status ?? 'on-progress',
 		notify: task?.notify ?? false,
 	};
 

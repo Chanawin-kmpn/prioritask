@@ -4,6 +4,7 @@ import TaskForm from '../forms/TaskForm';
 import { Task, TaskPriority } from '@/types/global';
 import { useRouter } from 'next/navigation';
 import { getLocalStorageWithExpiry } from '@/lib/utils';
+import TaskCard from '../cards/TaskCard';
 
 interface MatrixProps {
 	priorityType: TaskPriority;
@@ -56,9 +57,7 @@ const Matrix = ({
 					key={i}
 					className="z-10 flex size-[100px] items-center justify-center border border-gray-100"
 				>
-					{i < tasks.length && (
-						<div className={`size-12 rounded-full ${dotColor} border`} />
-					)}
+					{i < tasks.length && <TaskCard dotColor={dotColor} task={tasks[i]} />}
 
 					{i === tasks.length && tasks.length < 25 && (
 						<TaskForm

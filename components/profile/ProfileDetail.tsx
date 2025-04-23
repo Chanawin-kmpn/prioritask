@@ -2,7 +2,6 @@ import React from 'react';
 import EditProfileForm from '../forms/EditProfileForm';
 import ProfileDelete from './ProfileDelete';
 import ProfileIndentity from './ProfileIndentity';
-import { Timestamp } from 'firebase-admin/firestore';
 
 const ProfileDetail = ({
 	id,

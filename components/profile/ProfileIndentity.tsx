@@ -8,7 +8,6 @@ import {
 	Table,
 } from '../ui/table';
 import dayjs from 'dayjs';
-import { Timestamp } from 'firebase-admin/firestore';
 
 const ProfileIndentity = ({
 	email,

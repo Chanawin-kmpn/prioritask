@@ -126,8 +126,8 @@ export default function TaskForm({
 
 			<DialogContent className="gap-8 px-8 py-16">
 				<DialogHeader>
-					<DialogTitle className="pointer-events-none tracking-[8px]">
-						CREATE TASK
+					<DialogTitle className="pointer-events-none tracking-[8px] uppercase">
+						Create Task
 					</DialogTitle>
 					<DialogDescription className="pointer-events-none">
 						Fill in the data below to add a new task

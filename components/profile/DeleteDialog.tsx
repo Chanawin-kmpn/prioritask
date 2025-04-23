@@ -92,7 +92,7 @@ const DeleteDialog = ({ id, username }: { id: string; username: string }) => {
 						</Button>
 					</DialogClose>
 					<Button
-						className="submit-btn w-fit self-end bg-red-500 hover:bg-red-400"
+						className="submit-btn bg-danger hover:bg-danger/80 w-fit self-end"
 						size="lg"
 						onClick={handleDelete}
 						disabled={isDeleteDisabled}

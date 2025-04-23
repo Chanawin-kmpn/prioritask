@@ -54,15 +54,15 @@ const TaskLimitAlertDialog = ({
 					in.
 				</AlertDialogDescription>
 				<AlertDialogFooter className="flex">
-					<AlertDialogCancel asChild>
-						<Button
-							className="cancel-btn w-fit py-4"
-							size="lg"
-							onClick={() => setOpen(false)}
-						>
-							<X /> Cancel
-						</Button>
-					</AlertDialogCancel>
+					<Button
+						variant="outline"
+						className="cancel-btn w-fit py-4"
+						size="lg"
+						onClick={() => setOpen(false)}
+					>
+						<X /> Cancel
+					</Button>
+
 					<AlertDialogAction asChild>
 						<Button className="submit-btn flex-2" size="lg" asChild>
 							<Link href={ROUTES.SIGN_IN}>Sign in</Link>

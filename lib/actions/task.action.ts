@@ -1,16 +1,24 @@
 'use server';
 import { firestore } from '@/firebase/server';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import action from '@/handler/action';
 import handleError from '@/handler/error';
 import { CreateTaskParams, GetTaskByUserParams } from '@/types/action';
 import { ActionResponse, ErrorResponse, Task } from '@/types/global';
-import {
-	CreateTaskSchema,
-	GetTasksByUserSchema,
-} from '@/validations/validations';
+import { CreateTaskSchema } from '@/validations/validations';
 import { revalidatePath } from 'next/cache';
 import ROUTES from '@/constants/routes';
+
+const normalize = (obj: any): any => {
+	if (obj instanceof Timestamp) return obj.toMillis();
+	if (Array.isArray(obj)) return obj.map(normalize);
+	if (obj && typeof obj === 'object') {
+		return Object.fromEntries(
+			Object.entries(obj).map(([k, v]) => [k, normalize(v)])
+		);
+	}
+	return obj;
+};
 
 export async function createTask(
 	params: CreateTaskParams
@@ -116,8 +124,9 @@ export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
 		const tasks: Task[] = query.docs.map((data) => ({
 			...(data.data() as Task),
 		}));
+		const normalizeTasks = normalize(tasks);
 		// revalidatePath(ROUTES.HOME);
-		return { success: true, data: JSON.parse(JSON.stringify(tasks)) };
+		return { success: true, data: JSON.parse(JSON.stringify(normalizeTasks)) };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;
 	}

@@ -2,7 +2,7 @@ import { avatarTextGenerate, cn } from '@/lib/utils';
 import Image from 'next/image';
 import React from 'react';
 import { Avatar, AvatarFallback } from '../ui/avatar';
-import DeleteDialog from './DeleteDialog';
+import DeleteDialog from './DeleteAccountDialog';
 
 const ProfileDelete = ({
 	id,

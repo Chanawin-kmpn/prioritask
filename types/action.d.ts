@@ -54,3 +54,8 @@ interface SetTaskToCompleteParams {
 	taskId: string;
 	userId?: string;
 }
+
+interface DeleteTaskByIdParams {
+	taskId: string;
+	userId: string;
+}

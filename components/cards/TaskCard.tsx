@@ -22,8 +22,13 @@ import {
 } from 'lucide-react';
 import PriorityInfo from '../PriorityInfo';
 import { Button } from '../ui/button';
-import { setTaskToComplete } from '@/lib/actions/task.action';
+import {
+	deleteTaskByTaskId,
+	setTaskToComplete,
+} from '@/lib/actions/task.action';
 import { toast } from 'sonner';
+import TaskConfirmDeleteDialog from '../TaskConfirmDeleteDialog';
+import { deleteTaskFromLocalStorage } from '@/lib/utils';
 
 interface TaskCardProps {
 	dotColor: string;
@@ -50,31 +55,42 @@ const TaskCard = ({ dotColor, task, userId }: TaskCardProps) => {
 				});
 			}
 		} else {
-			updateLocalStorage(task.id, 'complete');
+			deleteTaskFromLocalStorage(task.id);
 			window.location.reload();
 		}
-		toast.success('Task marked as complete. You are not logged in.', {
+		toast.success('Task marked as complete.', {
 			description: `Task "${task.name}" has been successfully completed.`,
 		});
 	};
 
-	const updateLocalStorage = (taskId: string, newStatus: string) => {
-		const tasks = JSON.parse(localStorage.getItem('guestTasks')!) || [];
-		const updatedTasks = tasks.map((task: Task) => {
-			if (task.id === taskId) {
-				return {
-					...task,
-					status: newStatus, // Update the status
-				};
+	const handleDeleteTask = async () => {
+		if (!task.id) {
+			console.error('Task ID is undefined');
+			return;
+		}
+		if (userId) {
+			const { success, error } = await deleteTaskByTaskId({
+				taskId: task.id,
+				userId,
+			});
+
+			if (!success) {
+				toast.error('Error', {
+					description: error?.message,
+				});
 			}
-			return task;
+		} else {
+			deleteTaskFromLocalStorage(task.id);
+			window.location.reload();
+		}
+		toast.success('Task deleted successfully!', {
+			description: '🎯 One less thing to worry about—keep moving forward!',
 		});
-		localStorage.setItem('guestTasks', JSON.stringify(updatedTasks));
 	};
 
 	return (
 		<HoverCard openDelay={300}>
-			<HoverCardTrigger>
+			<HoverCardTrigger asChild>
 				<div className={`size-12 rounded-full ${dotColor} border`} />
 			</HoverCardTrigger>
 			<HoverCardContent className="w-[32rem]">
@@ -120,22 +136,17 @@ const TaskCard = ({ dotColor, task, userId }: TaskCardProps) => {
 						</div>
 					</CardContent>
 					<div className="divider" />
-					<CardFooter className="justify-between">
+					<CardFooter className="items-center justify-between">
 						<Button
 							size="lg"
-							className="submit-btn bg-safe hover:bg-safe/80 w-fit self-end"
+							className="complete-btn w-fit self-end"
 							onClick={handleCompleteTask}
 						>
 							<CheckIcon />
 							Complete
 						</Button>
-						<div className="space-x-4">
-							<Button
-								className="submit-btn bg-danger hover:bg-danger/80 w-fit self-end"
-								size="lg"
-							>
-								<Trash2Icon />
-							</Button>
+						<div className="flex items-center justify-center gap-4">
+							<TaskConfirmDeleteDialog handleDeleteTask={handleDeleteTask} />
 							<Button size="lg" className="submit-btn w-fit">
 								<PencilIcon /> Edit
 							</Button>

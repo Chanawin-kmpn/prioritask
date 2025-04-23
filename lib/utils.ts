@@ -1,4 +1,4 @@
-import { ActionType } from '@/types/global';
+import { ActionType, Task } from '@/types/global';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -103,3 +103,9 @@ export function getLocalStorageWithExpiry(key: string) {
 
 	return item; // คืนค่า value ถ้ายังไม่หมดอายุ
 }
+
+export const deleteTaskFromLocalStorage = (taskId: string) => {
+	const tasks = JSON.parse(localStorage.getItem('guestTasks')!) || [];
+	const filteredTasks = tasks.filter((task: Task) => task.id !== taskId);
+	localStorage.setItem('guestTasks', JSON.stringify(filteredTasks));
+};

@@ -5,7 +5,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card';
 const PriorityInfo = () => {
 	return (
 		<HoverCard>
-			<HoverCardTrigger>
+			<HoverCardTrigger asChild>
 				<CircleHelpIcon />
 			</HoverCardTrigger>
 			<HoverCardContent className="w-80 space-y-4 px-8" align="start">

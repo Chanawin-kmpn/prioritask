@@ -3,7 +3,11 @@ import { firestore } from '@/firebase/server';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import action from '@/handler/action';
 import handleError from '@/handler/error';
-import { CreateTaskParams, SetTaskToCompleteParams } from '@/types/action';
+import {
+	CreateTaskParams,
+	DeleteTaskByIdParams,
+	SetTaskToCompleteParams,
+} from '@/types/action';
 import {
 	ActionResponse,
 	ErrorResponse,
@@ -12,6 +16,7 @@ import {
 } from '@/types/global';
 import {
 	CreateTaskSchema,
+	DeleteTaskByTaskIdSchema,
 	SetTaskToCompleteSchema,
 } from '@/validations/validations';
 import { revalidatePath } from 'next/cache';
@@ -209,6 +214,74 @@ export async function setTaskToComplete(
 			status: 'complete',
 			expirationDate,
 		});
+
+		revalidatePath(ROUTES.HOME);
+		return { success: true };
+	} catch (error) {
+		return handleError(error) as ErrorResponse;
+	}
+}
+
+export async function deleteTaskByTaskId(
+	params: DeleteTaskByIdParams
+): Promise<ActionResponse> {
+	const validationResult = await action({
+		params,
+		schema: DeleteTaskByTaskIdSchema,
+	});
+
+	if (validationResult instanceof Error) {
+		return handleError(validationResult) as ErrorResponse;
+	}
+
+	const { taskId, userId } = validationResult.params!;
+
+	try {
+		if (!userId) {
+			return {
+				success: false,
+				error: {
+					message: 'Unauthorize',
+				},
+			};
+		}
+
+		const tasksSnapshot = await firestore
+			.collection('tasks')
+			.where('id', '==', taskId)
+			.get();
+
+		if (tasksSnapshot.empty) {
+			return {
+				success: false,
+				error: {
+					message: 'Task not found!',
+				},
+			};
+		}
+
+		const userSnapshot = await firestore
+			.collection('users')
+			.where('uid', '==', userId)
+			.get();
+
+		if (userSnapshot.empty) {
+			return {
+				success: false,
+				error: {
+					message: 'User not found!',
+				},
+			};
+		}
+
+		await firestore.collection('tasks').doc(taskId).delete();
+		const userDoc = userSnapshot.docs[0]; //เก็บ user doc แรกที่ตรงกัน
+		await firestore
+			.collection('users')
+			.doc(userDoc.id)
+			.update({
+				tasks: FieldValue.arrayRemove(taskId),
+			});
 
 		revalidatePath(ROUTES.HOME);
 		return { success: true };

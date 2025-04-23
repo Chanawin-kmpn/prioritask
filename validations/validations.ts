@@ -132,3 +132,8 @@ export const SetTaskToCompleteSchema = z.object({
 	taskId: z.string(),
 	userId: z.string().optional(),
 });
+
+export const DeleteTaskByTaskIdSchema = z.object({
+	taskId: z.string(),
+	userId: z.string(),
+});

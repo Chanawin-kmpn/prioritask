@@ -63,9 +63,11 @@ const Matrix = ({
 				>
 					{i < tasks.length && (
 						<TaskCard
+							priorityType={priorityType}
 							userId={userId || ''}
 							dotColor={dotColor}
 							task={tasks[i]}
+							setTasks={setTasks}
 						/>
 					)}
 

@@ -9,12 +9,14 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from './ui/dialog';
-import { Trash2Icon, X } from 'lucide-react';
+import { LoaderCircleIcon, Trash2Icon, X } from 'lucide-react';
 import { Button } from './ui/button';
 
 const TaskConfirmDeleteDialog = ({
+	isSubmitting,
 	handleDeleteTask,
 }: {
+	isSubmitting: boolean;
 	handleDeleteTask: () => void;
 }) => {
 	return (
@@ -53,7 +55,13 @@ const TaskConfirmDeleteDialog = ({
 						size="lg"
 						onClick={handleDeleteTask}
 					>
-						<Trash2Icon /> Delete
+						{isSubmitting ? (
+							<LoaderCircleIcon className="size-5 animate-spin" />
+						) : (
+							<>
+								<Trash2Icon /> Delete
+							</>
+						)}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

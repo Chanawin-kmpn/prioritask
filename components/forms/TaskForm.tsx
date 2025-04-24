@@ -16,7 +16,15 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar1Icon, ClockIcon, Plus, X } from 'lucide-react';
+import {
+	Calendar1Icon,
+	ClockIcon,
+	LoaderCircleIcon,
+	PencilIcon,
+	PencilLineIcon,
+	Plus,
+	X,
+} from 'lucide-react';
 import {
 	Form,
 	FormField,
@@ -43,10 +51,11 @@ import {
 import { Textarea } from '../ui/textarea';
 import { Task, TaskPriority } from '@/types/global';
 import { TaskFormSchema } from '@/validations/validations';
-import { createTask } from '@/lib/actions/task.action';
+import { createTask, editTask } from '@/lib/actions/task.action';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/Auth';
 import { LIMIT_GUEST_TASK } from '@/constants/constants';
+import { useState } from 'react';
 
 interface Props {
 	task?: Task;
@@ -67,6 +76,7 @@ export default function TaskForm({
 }: Props) {
 	const auth = useAuth();
 	const user = auth?.currentUser!;
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const defaultVals: z.infer<typeof TaskFormSchema> = {
 		name: task?.name ?? '',
@@ -84,10 +94,49 @@ export default function TaskForm({
 	});
 
 	const onSubmit = async (values: z.infer<typeof TaskFormSchema>) => {
+		setIsSubmitting(true);
+		if (isEdit) {
+			const { success, data, error } = await editTask({
+				taskId: task!.id,
+				...values,
+				userId: user?.uid,
+			});
+
+			if (!success) {
+				toast.error('Error', {
+					description: error?.message,
+				});
+			}
+
+			if (!user) {
+				const existingTasks = JSON.parse(
+					localStorage.getItem('guestTasks') || '[]'
+				);
+				const updatedTasks = existingTasks.map(
+					(t: Task) => (t.id === task!.id ? { ...t, ...data } : t) // อัปเดตข้อมูลที่จำเป็น
+				);
+				localStorage.setItem('guestTasks', JSON.stringify(updatedTasks));
+				window.location.reload();
+			}
+			setIsSubmitting(false);
+			setTasks(
+				(prevTask: any) =>
+					prevTask.map((t: Task) => (t.id === task!.id ? data : t)) // อัปเดต Task ใน State
+			);
+
+			toast.success('Task updated successfully!', {
+				description: `🎯 Keep going—you're doing great! `,
+			});
+
+			return;
+		}
+
 		const { success, data, error } = await createTask({
 			...values,
 			userId: user?.uid,
 		});
+
+		setIsSubmitting(false);
 
 		if (!success) {
 			toast.error(`${error?.message}. Please login first.`);
@@ -119,18 +168,26 @@ export default function TaskForm({
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button variant="outline" className="size-12 rounded-full">
-					<Plus />
-				</Button>
+				{isEdit ? (
+					<Button className="submit-btn w-fit" size="lg">
+						<PencilIcon /> Edit
+					</Button>
+				) : (
+					<Button variant="outline" className="size-12 rounded-full">
+						<Plus />
+					</Button>
+				)}
 			</DialogTrigger>
 
 			<DialogContent className="gap-8 px-8 py-16">
 				<DialogHeader>
 					<DialogTitle className="pointer-events-none tracking-[8px] uppercase">
-						Create Task
+						{isEdit ? 'Edit Task' : 'Create Task'}
 					</DialogTitle>
 					<DialogDescription className="pointer-events-none">
-						Fill in the data below to add a new task
+						{isEdit
+							? 'Modify task details below'
+							: 'Fill in the data below to add a new task'}
 					</DialogDescription>
 				</DialogHeader>
 
@@ -215,7 +272,7 @@ export default function TaskForm({
 															}}
 														>
 															<SelectTrigger className="w-full border border-gray-100">
-																<SelectValue placeholder="Select" />
+																<SelectValue placeholder="Select preset" />
 															</SelectTrigger>
 															<SelectContent
 																position="popper"
@@ -267,6 +324,45 @@ export default function TaskForm({
 								/>
 							</div>
 						</div>
+						{isEdit && (
+							<>
+								<div className="divider" />
+								<div className="space-y-4">
+									<p className="">Task Detail</p>
+									{/* Task Priority */}
+									<FormField
+										control={form.control}
+										name="priority"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Task Priority</FormLabel>
+												<FormControl>
+													<Select
+														onValueChange={(value) => {
+															{
+																field.onChange(value);
+															}
+														}}
+														defaultValue={field.value}
+													>
+														<SelectTrigger className="w-full">
+															<SelectValue placeholder="Select priority" />
+														</SelectTrigger>
+														<SelectContent>
+															<SelectItem value="do">Do</SelectItem>
+															<SelectItem value="schedule">Schedule</SelectItem>
+															<SelectItem value="delegate">Delegate</SelectItem>
+															<SelectItem value="delete">Delete</SelectItem>
+														</SelectContent>
+													</Select>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								</div>
+							</>
+						)}
 						{/* Notify me */}
 						<FormField
 							control={form.control}
@@ -295,8 +391,23 @@ export default function TaskForm({
 									<X /> Cancel
 								</Button>
 							</DialogClose>
-							<Button type="submit" size="lg" className="submit-btn w-fit">
-								<Plus /> Create
+							<Button
+								disabled={isSubmitting || form.formState.isSubmitting} // ปิดปุ่มเมื่อกำลังส่งข้อมูล
+								type="submit"
+								size="lg"
+								className="submit-btn w-fit"
+							>
+								{isSubmitting ? ( // แสดง spinner เมื่อกำลังส่ง
+									<LoaderCircleIcon className="animate-spin" /> // อาจใช้ไอคอนหรือตัว spinner ของคุณเอง
+								) : isEdit ? (
+									<>
+										<PencilLineIcon /> Edit
+									</>
+								) : (
+									<>
+										<Plus /> Create
+									</>
+								)}
 							</Button>
 						</DialogFooter>
 					</form>

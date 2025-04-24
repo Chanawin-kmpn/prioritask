@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 import {
 	HoverCard,
 	HoverCardContent,
@@ -12,14 +13,9 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import { Task } from '@/types/global';
+import { Task, TaskPriority } from '@/types/global';
 import dayjs from 'dayjs';
-import {
-	CheckIcon,
-	CircleHelpIcon,
-	PencilIcon,
-	Trash2Icon,
-} from 'lucide-react';
+import { CheckIcon, LoaderCircleIcon } from 'lucide-react';
 import PriorityInfo from '../PriorityInfo';
 import { Button } from '../ui/button';
 import {
@@ -29,15 +25,26 @@ import {
 import { toast } from 'sonner';
 import TaskConfirmDeleteDialog from '../TaskConfirmDeleteDialog';
 import { deleteTaskFromLocalStorage } from '@/lib/utils';
+import TaskForm from '../forms/TaskForm';
 
 interface TaskCardProps {
+	priorityType: TaskPriority;
 	dotColor: string;
 	task: Task;
 	userId: string;
+	setTasks: (prevTask: any) => void;
 }
 
-const TaskCard = ({ dotColor, task, userId }: TaskCardProps) => {
+const TaskCard = ({
+	priorityType,
+	dotColor,
+	task,
+	userId,
+	setTasks,
+}: TaskCardProps) => {
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const handleCompleteTask = async () => {
+		setIsSubmitting(true);
 		if (!task.id) {
 			console.error('Task ID is undefined');
 			return;
@@ -48,6 +55,8 @@ const TaskCard = ({ dotColor, task, userId }: TaskCardProps) => {
 				taskId: task.id,
 				userId,
 			});
+
+			setIsSubmitting(false);
 
 			if (!success) {
 				toast.error('Error', {
@@ -64,6 +73,7 @@ const TaskCard = ({ dotColor, task, userId }: TaskCardProps) => {
 	};
 
 	const handleDeleteTask = async () => {
+		setIsSubmitting(true);
 		if (!task.id) {
 			console.error('Task ID is undefined');
 			return;
@@ -73,6 +83,8 @@ const TaskCard = ({ dotColor, task, userId }: TaskCardProps) => {
 				taskId: task.id,
 				userId,
 			});
+
+			setIsSubmitting(false);
 
 			if (!success) {
 				toast.error('Error', {
@@ -142,14 +154,26 @@ const TaskCard = ({ dotColor, task, userId }: TaskCardProps) => {
 							className="complete-btn w-fit self-end"
 							onClick={handleCompleteTask}
 						>
-							<CheckIcon />
-							Complete
+							{isSubmitting ? (
+								<LoaderCircleIcon className="animate-spin" />
+							) : (
+								<>
+									<CheckIcon />
+									Complete
+								</>
+							)}
 						</Button>
 						<div className="flex items-center justify-center gap-4">
-							<TaskConfirmDeleteDialog handleDeleteTask={handleDeleteTask} />
-							<Button size="lg" className="submit-btn w-fit">
-								<PencilIcon /> Edit
-							</Button>
+							<TaskConfirmDeleteDialog
+								handleDeleteTask={handleDeleteTask}
+								isSubmitting={isSubmitting}
+							/>
+							<TaskForm
+								isEdit={true}
+								priorityType={priorityType}
+								task={task}
+								setTasks={setTasks}
+							/>
 						</div>
 					</CardFooter>
 				</Card>

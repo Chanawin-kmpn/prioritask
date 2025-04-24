@@ -59,3 +59,7 @@ interface DeleteTaskByIdParams {
 	taskId: string;
 	userId: string;
 }
+
+interface EditTaskParams extends CreateTaskParams {
+	taskId: string;
+}

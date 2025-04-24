@@ -6,6 +6,7 @@ import handleError from '@/handler/error';
 import {
 	CreateTaskParams,
 	DeleteTaskByIdParams,
+	EditTaskParams,
 	SetTaskToCompleteParams,
 } from '@/types/action';
 import {
@@ -17,6 +18,7 @@ import {
 import {
 	CreateTaskSchema,
 	DeleteTaskByTaskIdSchema,
+	EditTaskSchema,
 	SetTaskToCompleteSchema,
 } from '@/validations/validations';
 import { revalidatePath } from 'next/cache';
@@ -285,6 +287,84 @@ export async function deleteTaskByTaskId(
 
 		revalidatePath(ROUTES.HOME);
 		return { success: true };
+	} catch (error) {
+		return handleError(error) as ErrorResponse;
+	}
+}
+
+export async function editTask(
+	params: EditTaskParams
+): Promise<ActionResponse<Task>> {
+	const validationResult = await action({ params, schema: EditTaskSchema });
+
+	if (validationResult instanceof Error) {
+		return handleError(validationResult) as ErrorResponse;
+	}
+
+	const {
+		taskId,
+		name,
+		description,
+		dueDate,
+		dueTime,
+		priority,
+		status,
+		notify,
+		userId,
+	} = validationResult.params!;
+
+	const now = FieldValue.serverTimestamp();
+	try {
+		if (!userId) {
+			const updatedTasks = {
+				name,
+				description,
+				dueDate,
+				dueTime,
+				priority,
+				status,
+				notify,
+				updatedAt: now,
+			};
+			return { success: true, data: JSON.parse(JSON.stringify(updatedTasks)) };
+		}
+		const taskSnapshot = await firestore.collection('tasks').doc(taskId).get();
+		if (!taskSnapshot.exists) {
+			return {
+				success: false,
+				error: {
+					message: 'Task not found',
+				},
+			};
+		}
+
+		const currentTask = taskSnapshot.data() as Task;
+
+		const updatesData: Partial<Task> = {};
+
+		// เช็คการเปลี่ยนแปลงในแต่ละฟิลด์
+		if (currentTask.name !== name) updatesData.name = name;
+		if (currentTask.description !== description)
+			updatesData.description = description;
+		if (currentTask.dueDate !== dueDate) updatesData.dueDate = dueDate;
+		if (currentTask.dueTime !== dueTime) updatesData.dueTime = dueTime;
+		if (currentTask.priority !== priority) updatesData.priority = priority;
+		if (currentTask.status !== status) updatesData.status = status;
+		if (currentTask.notify !== notify) updatesData.notify = notify;
+
+		// อัปเดตเฉพาะฟิลด์ที่มีการเปลี่ยนแปลง
+		if (Object.keys(updatesData).length > 0) {
+			await firestore
+				.collection('tasks')
+				.doc(taskId)
+				.update({
+					...updatesData,
+					updatedAt: now, // อัปเดตเวลาเมื่อมีการเปลี่ยนแปลง
+				});
+		}
+
+		revalidatePath(ROUTES.HOME);
+		return { success: true, data: JSON.parse(JSON.stringify(currentTask)) };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;
 	}

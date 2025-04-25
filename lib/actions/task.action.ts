@@ -6,6 +6,7 @@ import handleError from '@/handler/error';
 import {
 	CreateTaskParams,
 	DeleteTaskByIdParams,
+	DeleteTaskFromDashboardParams,
 	EditTaskParams,
 	SetTaskToCompleteParams,
 } from '@/types/action';
@@ -18,6 +19,7 @@ import {
 import {
 	CreateTaskSchema,
 	DeleteTaskByTaskIdSchema,
+	DeleteTaskFromDashboardSchema,
 	EditTaskSchema,
 	SetTaskToCompleteSchema,
 } from '@/validations/validations';
@@ -178,7 +180,7 @@ export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
 		});
 
 		const updatePromises = remainingTasks.map(async (task) => {
-			const dueDate = new Date(task.dueDate);
+			const dueDate = new Date(normalize(task.dueDate));
 			// ถ้าไม่มี dueTime ให้ตั้งเวลาเป็น 00:00
 			const dueTime = task.dueTime
 				? new Date(
@@ -187,7 +189,7 @@ export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
 							Number(task.dueTime.split(':')[1])
 						)
 					)
-				: new Date(dueDate.setHours(0, 0)); // ใช้เวลา 00:00 ถ้าไม่มี dueTime
+				: new Date(dueDate.setHours(23, 59)); // ใช้เวลา 23:59 ถ้าไม่มี dueTime
 
 			if (dueTime <= currentDate && task.status === 'on-progress') {
 				// อัปเดตสถานะเป็น "incomplete"
@@ -413,6 +415,72 @@ export async function editTask(
 
 		revalidatePath(ROUTES.HOME);
 		return { success: true, data: JSON.parse(JSON.stringify(currentTask)) };
+	} catch (error) {
+		return handleError(error) as ErrorResponse;
+	}
+}
+
+export async function deleteTaskFromDashboard(
+	params: DeleteTaskFromDashboardParams
+): Promise<ActionResponse> {
+	const validationResult = await action({
+		params,
+		schema: DeleteTaskFromDashboardSchema,
+		authorize: true,
+	});
+
+	if (validationResult instanceof Error) {
+		return handleError(validationResult) as ErrorResponse;
+	}
+
+	const { taskId } = validationResult.params!;
+	const userId = validationResult.user?.uid;
+
+	if (!userId) {
+		return {
+			success: false,
+			error: {
+				message: 'User not found!',
+			},
+		};
+	}
+
+	try {
+		const taskSnapshot = await firestore.collection('tasks').doc(taskId).get();
+
+		if (!taskSnapshot.exists) {
+			return {
+				success: false,
+				error: {
+					message: 'Task not found!',
+				},
+			};
+		}
+
+		// Delete the task from the dashboard
+		await firestore.collection('tasks').doc(taskId).delete();
+
+		const userSnapshot = await firestore.collection('users').doc(userId).get();
+
+		if (!userSnapshot.exists) {
+			return {
+				success: false,
+				error: {
+					message: 'User not found!',
+				},
+			};
+		}
+
+		// Remove taskId from user's tasks
+		await firestore
+			.collection('users')
+			.doc(userId)
+			.update({
+				tasks: FieldValue.arrayRemove(taskId),
+			});
+
+		revalidatePath(ROUTES.DASHBOARD);
+		return { success: true };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;
 	}

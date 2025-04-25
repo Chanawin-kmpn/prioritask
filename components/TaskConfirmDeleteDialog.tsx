@@ -15,9 +15,17 @@ import { Button } from './ui/button';
 const TaskConfirmDeleteDialog = ({
 	isSubmitting,
 	handleDeleteTask,
+	taskId,
+	contents,
 }: {
 	isSubmitting: boolean;
-	handleDeleteTask: () => void;
+	handleDeleteTask: (taskId?: string) => void;
+	taskId?: string;
+	contents: {
+		title: string;
+		description: string;
+		note: string;
+	};
 }) => {
 	return (
 		<Dialog>
@@ -28,16 +36,12 @@ const TaskConfirmDeleteDialog = ({
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader className="space-x-4">
-					<DialogTitle className="text-center">
-						Are you sure to delete this task?
-					</DialogTitle>
+					<DialogTitle className="text-center">{contents.title}</DialogTitle>
 					<DialogDescription className="text-center">
-						No matter how overwhelming your workload may feel, stay strong!💪
-						Keep tackling each challenge step by step, and you’ll reach your
-						goals in no time!🎯
+						{contents.description}
 					</DialogDescription>
 					<span className="text-danger text-center text-sm">
-						Note: Once you delete this task, it will be permanently removed.
+						{contents.note}
 					</span>
 				</DialogHeader>
 				<DialogFooter>
@@ -53,7 +57,13 @@ const TaskConfirmDeleteDialog = ({
 					<Button
 						className="delete-btn w-fit self-end"
 						size="lg"
-						onClick={handleDeleteTask}
+						onClick={() => {
+							if (taskId) {
+								return handleDeleteTask(taskId);
+							} else {
+								return handleDeleteTask();
+							}
+						}}
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? (

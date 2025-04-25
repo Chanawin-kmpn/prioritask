@@ -1,29 +1,43 @@
-import { getTaskByUser } from '@/lib/actions/task.action';
+'use client';
+import { deleteTaskFromDashboard } from '@/lib/actions/task.action';
 import { Task } from '@/types/global';
-import React from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 import {
 	Table,
 	TableBody,
-	TableCaption,
 	TableCell,
 	TableHead,
 	TableHeader,
 	TableRow,
 } from '../ui/table';
 import dayjs from 'dayjs';
-import { Trash2Icon } from 'lucide-react';
 import { Badge } from '../ui/badge';
-import { taskStatusBadge } from '@/constants';
+import { taskPriorityBadge, taskStatusBadge } from '@/constants';
+import TaskConfirmDeleteDialog from '../TaskConfirmDeleteDialog';
 
-const DashboardTable = async () => {
-	const { success, data, error } = await getTaskByUser();
+const DashboardTable = ({ data }: { data: Task[] }) => {
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const handleDeleteTask = async (taskId: string) => {
+		setIsSubmitting(true);
 
-	if (!success) {
-		console.error(error?.message);
+		const { success, error } = await deleteTaskFromDashboard({
+			taskId,
+		});
 
-		return;
-	}
+		setIsSubmitting(false);
+
+		if (!success) {
+			toast.error('Error', {
+				description: error?.message,
+			});
+			return;
+		}
+
+		toast.success('Task deleted successfully!', {
+			description: '🎯 One less thing to worry about—keep moving forward!',
+		});
+	};
 
 	return (
 		<div className="bg-light100_dark800 max-h- overflow-y-auto rounded-[28px] border border-gray-100 p-8">
@@ -42,8 +56,16 @@ const DashboardTable = async () => {
 					{data?.map((task: Task) => (
 						<TableRow key={task.id}>
 							<TableCell className="font-medium">{task.name}</TableCell>
-							<TableCell className="uppercase">{task.priority}</TableCell>
-							<TableCell></TableCell>
+							<TableCell>
+								<Badge
+									className={`rounded-full px-8 text-lg ${taskPriorityBadge[task.priority].className}`}
+								>
+									{taskPriorityBadge[task.priority].label}
+								</Badge>
+							</TableCell>
+							<TableCell>
+								{dayjs(task.createdAt as Date).format('D MMMM YYYY')}
+							</TableCell>
 							<TableCell className="">
 								<Badge
 									className={`rounded-full text-lg ${taskStatusBadge[task.status].className}`}
@@ -58,7 +80,20 @@ const DashboardTable = async () => {
 									: '-'}
 							</TableCell>
 							<TableCell className="centre">
-								<Trash2Icon className="size-6" />
+								<TaskConfirmDeleteDialog
+									handleDeleteTask={(taskId) => {
+										if (taskId) handleDeleteTask(taskId);
+									}}
+									isSubmitting={isSubmitting}
+									taskId={task.id}
+									contents={{
+										title:
+											'Are you sure you want to delete this task from Dashboard?',
+										description:
+											'This data will be automatically deleted after 30 days. Do you want to delete it now?',
+										note: 'Note: Deleting a task from Dashboard is permanent and cannot be undone',
+									}}
+								/>
 							</TableCell>
 						</TableRow>
 					))}

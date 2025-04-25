@@ -35,3 +35,22 @@ export const taskStatusBadge = {
 		className: 'bg-zinc-200 text-zinc-800',
 	},
 };
+
+export const taskPriorityBadge = {
+	do: {
+		label: 'Do',
+		className: 'bg-do/20 text-do',
+	},
+	schedule: {
+		label: 'Schedule',
+		className: 'bg-schedule/20 text-schedule',
+	},
+	delegate: {
+		label: 'Delegate',
+		className: 'bg-delegate/20 text-delegate',
+	},
+	delete: {
+		label: 'Delete',
+		className: 'bg-delete/20 text-delete',
+	},
+};

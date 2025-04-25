@@ -26,6 +26,7 @@ import { toast } from 'sonner';
 import TaskConfirmDeleteDialog from '../TaskConfirmDeleteDialog';
 import { deleteTaskFromLocalStorage } from '@/lib/utils';
 import TaskForm from '../forms/TaskForm';
+import { title } from 'process';
 
 interface TaskCardProps {
 	priorityType: TaskPriority;
@@ -176,6 +177,13 @@ const TaskCard = ({
 							<TaskConfirmDeleteDialog
 								handleDeleteTask={handleDeleteTask}
 								isSubmitting={isSubmitting}
+								contents={{
+									title: 'Are you sure to delete this task?',
+									description: `No matter how overwhelming your workload may feel, stay strong!💪
+						Keep tackling each challenge step by step, and you’ll reach your
+						goals in no time!🎯`,
+									note: 'Note: Once you delete this task, it will be permanently removed.',
+								}}
 							/>
 							<TaskForm
 								isEdit={true}

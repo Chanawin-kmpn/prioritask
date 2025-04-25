@@ -141,3 +141,7 @@ export const DeleteTaskByTaskIdSchema = z.object({
 export const EditTaskSchema = CreateTaskSchema.extend({
 	taskId: z.string(),
 });
+
+export const DeleteTaskFromDashboardSchema = z.object({
+	taskId: z.string(),
+});

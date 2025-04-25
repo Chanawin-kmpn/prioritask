@@ -196,7 +196,7 @@
 }
 
 @utility submit-btn {
-	@apply text-light200_dark100 bg-dark100_light200 mb-0 w-full rounded-md py-4;
+	@apply text-light200_dark100 bg-dark100_light200 hover:bg-dark-100/80 hover:dark:bg-light-200/80 mb-0 w-full rounded-md py-4;
 }
 
 @utility cancel-btn {

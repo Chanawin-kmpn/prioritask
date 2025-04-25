@@ -50,6 +50,13 @@ const TaskCard = ({
 			return;
 		}
 
+		if (task.status === 'complete') {
+			toast.error('Error', {
+				description: 'Task is already marked as complete!',
+			});
+			return;
+		}
+
 		if (userId) {
 			const { success, error } = await setTaskToComplete({
 				taskId: task.id,
@@ -62,6 +69,7 @@ const TaskCard = ({
 				toast.error('Error', {
 					description: error?.message,
 				});
+				return;
 			}
 		} else {
 			deleteTaskFromLocalStorage(task.id);
@@ -153,6 +161,7 @@ const TaskCard = ({
 							size="lg"
 							className="complete-btn w-fit self-end"
 							onClick={handleCompleteTask}
+							disabled={isSubmitting}
 						>
 							{isSubmitting ? (
 								<LoaderCircleIcon className="animate-spin" />

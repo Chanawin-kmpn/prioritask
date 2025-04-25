@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		});
 
 		return () => unsubscribe();
-	}, [currentUser]);
+	}, []);
 
 	const loginWithGoogle = async () => {
 		try {

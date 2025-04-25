@@ -29,7 +29,9 @@ export default async function Home() {
 		userId = user.uid;
 	} catch (error) {
 		// หากตรวจสอบไม่สำเร็จ ให้จัดการข้อผิดพลาด เช่น redirect หรือแสดงข้อความ
-		throw new UnauthorizedError('Token verification failed');
+		throw new UnauthorizedError(
+			error instanceof Error ? error.message : String(error)
+		);
 	}
 
 	// รับข้อมูลผู้ใช้

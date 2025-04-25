@@ -54,6 +54,7 @@ const TaskConfirmDeleteDialog = ({
 						className="delete-btn w-fit self-end"
 						size="lg"
 						onClick={handleDeleteTask}
+						disabled={isSubmitting}
 					>
 						{isSubmitting ? (
 							<LoaderCircleIcon className="size-5 animate-spin" />

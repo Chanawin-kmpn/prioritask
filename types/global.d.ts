@@ -20,7 +20,7 @@ interface RouteParams {
 }
 
 type ActionType = 'PROFILE_UPDATE' | 'PASSWORD_CHANGE' | 'PASSWORD_RESET';
-type TaskStatus = 'done' | 'delete' | 'on-progress' | 'incomplete';
+type TaskStatus = 'complete' | 'delete' | 'on-progress' | 'incomplete';
 type TaskPriority = 'do' | 'schedule' | 'delegate' | 'delete';
 
 interface FilterPriority {

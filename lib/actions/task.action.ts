@@ -212,6 +212,17 @@ export async function setTaskToComplete(
 			};
 		}
 
+		const currentTaskStatus = taskSnapshot.docs[0].data();
+
+		if (currentTaskStatus.status === 'complete') {
+			return {
+				success: false,
+				error: {
+					message: 'Task is already marked as complete!',
+				},
+			};
+		}
+
 		await firestore.collection('tasks').doc(taskId).update({
 			status: 'complete',
 			expirationDate,

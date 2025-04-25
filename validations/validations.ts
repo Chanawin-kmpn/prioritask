@@ -111,7 +111,7 @@ export const TaskFormSchema = z.object({
 		.nullable(),
 
 	priority: z.enum(['do', 'schedule', 'delegate', 'delete']),
-	status: z.enum(['done', 'delete', 'on-progress', 'incomplete']),
+	status: z.enum(['complete', 'delete', 'on-progress', 'incomplete']),
 	notify: z.boolean(),
 });
 

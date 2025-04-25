@@ -80,7 +80,7 @@ export const setToken = async ({
 			secure: process.env.NODE_ENV === 'production', // ใช้เฉพาะในโหมด production เท่านั้น
 		});
 	} catch (error) {
-		console.error(error);
+		return handleError(error) as ErrorResponse;
 	}
 };
 

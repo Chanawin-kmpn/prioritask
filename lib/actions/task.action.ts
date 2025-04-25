@@ -24,6 +24,7 @@ import {
 import { revalidatePath } from 'next/cache';
 import ROUTES from '@/constants/routes';
 import { EXPIRATION_TASK_DATE } from '@/constants/constants';
+import { convertTimestampToDate } from '../utils';
 
 const normalize = (obj: any): any => {
 	if (obj instanceof Timestamp) return obj.toMillis();
@@ -137,7 +138,7 @@ export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
 		const query = await firestore
 			.collection('tasks')
 			.where('userId', '==', userId)
-			.orderBy('createdAt', 'desc')
+			.orderBy('createdAt', 'asc')
 			.get();
 
 		const tasks: Task[] = query.docs.map((data) => ({
@@ -171,11 +172,37 @@ export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
 		await Promise.all(deletePromises); // รอให้ Task ทั้งหมดถูกลบ
 
 		// กรอง Task ที่เหลือ จะเก็บ Task ที่ยังไม่หมดอายุและมีสถานะเป็น "on-process"
+
 		const remainingTasks = tasks.filter((task) => {
 			return !expiredTasks.some((expiredTask) => expiredTask.id === task.id);
 		});
 
-		const normalizeTasks = normalize(remainingTasks);
+		const updatePromises = remainingTasks.map(async (task) => {
+			const dueDate = new Date(task.dueDate);
+			// ถ้าไม่มี dueTime ให้ตั้งเวลาเป็น 00:00
+			const dueTime = task.dueTime
+				? new Date(
+						dueDate.setHours(
+							Number(task.dueTime.split(':')[0]),
+							Number(task.dueTime.split(':')[1])
+						)
+					)
+				: new Date(dueDate.setHours(0, 0)); // ใช้เวลา 00:00 ถ้าไม่มี dueTime
+
+			if (dueTime <= currentDate && task.status === 'on-progress') {
+				// อัปเดตสถานะเป็น "incomplete"
+				await firestore.collection('tasks').doc(task.id).update({
+					status: 'incomplete',
+				});
+				return { ...task, status: 'incomplete' }; // อัปเดตสถานะใน Task object
+			}
+
+			return task; // คืนค่า Task ถ้าไม่ต้องอัปเดต
+		});
+
+		const updatedTasks = await Promise.all(updatePromises); // รอให้การอัปเดตเสร็จสิ้น
+
+		const normalizeTasks = normalize(updatedTasks);
 		return { success: true, data: JSON.parse(JSON.stringify(normalizeTasks)) };
 	} catch (error) {
 		return handleError(error) as ErrorResponse;
@@ -223,8 +250,11 @@ export async function setTaskToComplete(
 			};
 		}
 
+		const now = FieldValue.serverTimestamp();
+
 		await firestore.collection('tasks').doc(taskId).update({
 			status: 'complete',
+			completedAt: now,
 			expirationDate,
 		});
 
@@ -287,14 +317,21 @@ export async function deleteTaskByTaskId(
 			};
 		}
 
-		await firestore.collection('tasks').doc(taskId).delete();
-		const userDoc = userSnapshot.docs[0]; //เก็บ user doc แรกที่ตรงกัน
-		await firestore
-			.collection('users')
-			.doc(userDoc.id)
-			.update({
-				tasks: FieldValue.arrayRemove(taskId),
-			});
+		const expirationDate = new Date();
+		expirationDate.setDate(expirationDate.getDate() + 7);
+
+		// await firestore.collection('tasks').doc(taskId).delete();
+		await firestore.collection('tasks').doc(taskId).update({
+			status: 'delete',
+			expirationDate,
+		});
+		// const userDoc = userSnapshot.docs[0]; //เก็บ user doc แรกที่ตรงกัน
+		// await firestore
+		// 	.collection('users')
+		// 	.doc(userDoc.id)
+		// 	.update({
+		// 		tasks: FieldValue.arrayRemove(taskId),
+		// 	});
 
 		revalidatePath(ROUTES.HOME);
 		return { success: true };

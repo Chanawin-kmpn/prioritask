@@ -42,6 +42,7 @@ interface Task {
 	notify: boolean;
 	isPublic?: boolean;
 	expirationDate?: Date;
+	completedAt?: Date;
 
 	createdAt: Timestamp | Date;
 	updatedAt: Timestamp | Date;

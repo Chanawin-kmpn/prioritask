@@ -109,3 +109,10 @@ export const deleteTaskFromLocalStorage = (taskId: string) => {
 	const filteredTasks = tasks.filter((task: Task) => task.id !== taskId);
 	localStorage.setItem('guestTasks', JSON.stringify(filteredTasks));
 };
+
+export const convertTimestampToDate = (timestamp: {
+	_seconds: number;
+	_nanoseconds: number;
+}): Date => {
+	return new Date(timestamp._seconds * 1000 + timestamp._nanoseconds / 1000000);
+};

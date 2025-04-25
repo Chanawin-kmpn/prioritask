@@ -16,3 +16,22 @@ export const formTitles = {
 		oAuthBtn: 'Sign in with Google',
 	},
 };
+
+export const taskStatusBadge = {
+	complete: {
+		label: 'Complete',
+		className: 'bg-green-200 text-green-800',
+	},
+	'on-progress': {
+		label: 'On Progress',
+		className: 'bg-blue-200 text-blue-800',
+	},
+	incomplete: {
+		label: 'Incomplete',
+		className: 'bg-red-200 text-red-800',
+	},
+	delete: {
+		label: 'Delete',
+		className: 'bg-zinc-200 text-zinc-800',
+	},
+};

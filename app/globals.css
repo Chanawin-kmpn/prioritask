@@ -176,6 +176,10 @@
 	@apply bg-dark-100 dark:bg-light-200;
 }
 
+@utility bg-light100_dark800 {
+	@apply bg-light-100 dark:bg-zinc-800;
+}
+
 @utility text-dark100_light200 {
 	@apply text-dark-100 dark:text-light-200;
 }

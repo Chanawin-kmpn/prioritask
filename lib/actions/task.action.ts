@@ -8,6 +8,7 @@ import {
 	DeleteTaskByIdParams,
 	DeleteTaskFromDashboardParams,
 	EditTaskParams,
+	GetTaskByUserParams,
 	SetTaskToCompleteParams,
 } from '@/types/action';
 import {
@@ -125,7 +126,9 @@ export async function createTask(
 	}
 }
 
-export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
+export async function getTaskByUser(
+	params: GetTaskByUserParams
+): Promise<ActionResponse<{ tasks: Task[]; isNext: boolean }>> {
 	const validationResult = await action({
 		authorize: true,
 	});
@@ -134,18 +137,25 @@ export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
 		return handleError(validationResult) as ErrorResponse;
 	}
 
+	const { page = 1, pageSize = 10 } = params;
+	const skip = (Number(page) - 1) * Number(pageSize);
+	const limit = pageSize;
+
 	try {
 		const userId = validationResult.user?.uid;
 
-		const query = await firestore
+		// คำสั่ง query สำหรับดึงข้อมูล
+		const query = firestore
 			.collection('tasks')
 			.where('userId', '==', userId)
 			.orderBy('createdAt', 'asc')
-			.get();
+			.limit(limit) // เพิ่มกฎ limit ที่นี่
+			.offset(skip); // เพิ่ม offset เพื่อข้ามงานที่ไม่ต้องการ
 
-		const tasks: Task[] = query.docs.map((data) => ({
-			// id: data.id, // เพิ่ม ID เพื่อใช้ในการลบ
+		const tasksData = await query.get(); // ดึงข้อมูลตาม query
+		const tasks: Task[] = tasksData.docs.map((data) => ({
 			...(data.data() as Task),
+			id: data.id, // แน่ใจว่าสามารถใช้ ID ได้
 		}));
 
 		// ตรวจสอบวันหมดอายุ
@@ -173,14 +183,14 @@ export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
 		});
 		await Promise.all(deletePromises); // รอให้ Task ทั้งหมดถูกลบ
 
-		// กรอง Task ที่เหลือ จะเก็บ Task ที่ยังไม่หมดอายุและมีสถานะเป็น "on-process"
-
-		const remainingTasks = tasks.filter((task) => {
-			return !expiredTasks.some((expiredTask) => expiredTask.id === task.id);
-		});
+		// กรอง Task ที่เหลือจะเก็บ Task ที่ยังไม่หมดอายุและมีสถานะเป็น "on-process"
+		const remainingTasks = tasks.filter(
+			(task) => !expiredTasks.some((expiredTask) => expiredTask.id === task.id)
+		);
 
 		const updatePromises = remainingTasks.map(async (task) => {
 			const dueDate = new Date(normalize(task.dueDate));
+
 			// ถ้าไม่มี dueTime ให้ตั้งเวลาเป็น 00:00
 			const dueTime = task.dueTime
 				? new Date(
@@ -204,8 +214,21 @@ export async function getTaskByUser(): Promise<ActionResponse<Task[]>> {
 
 		const updatedTasks = await Promise.all(updatePromises); // รอให้การอัปเดตเสร็จสิ้น
 
-		const normalizeTasks = normalize(updatedTasks);
-		return { success: true, data: JSON.parse(JSON.stringify(normalizeTasks)) };
+		// นับจำนวน Task ทั้งหมดเพื่อใช้ใน Pagination
+		const totalTasksQuery = firestore
+			.collection('tasks')
+			.where('userId', '==', userId)
+			.get();
+		const totalTasksSnapshot = await totalTasksQuery;
+		const totalTasks = totalTasksSnapshot.docs.length; // นับจำนวน Task ทั้งหมด
+		const isNext = totalTasks > skip + tasks.length; // เช็คว่ามีหน้าถัดไปหรือไม่
+
+		const normalizeTask = await normalize(updatedTasks);
+
+		return {
+			success: true,
+			data: { tasks: JSON.parse(JSON.stringify(normalizeTask)), isNext },
+		};
 	} catch (error) {
 		return handleError(error) as ErrorResponse;
 	}

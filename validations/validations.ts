@@ -15,6 +15,14 @@ const PasswordValidation = z
 		message: 'Password must contain at least one special character.',
 	});
 
+export const PaginatedSearchParamsSchema = z.object({
+	page: z.number().int().positive().default(1),
+	pageSize: z.number().int().positive().default(10),
+	query: z.string().optional(),
+	filter: z.string().optional(),
+	sort: z.string().optional(),
+});
+
 export const SignInSchema = z.object({
 	email: z
 		.string()

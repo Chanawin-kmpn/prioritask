@@ -1,5 +1,5 @@
 import { User } from 'firebase/auth';
-import { Task } from './global';
+import { PaginatedSearchParams, Task } from './global';
 
 interface AuthCredentials {
 	username: string;
@@ -46,8 +46,8 @@ interface CreateTaskParams {
 	userId?: string;
 }
 
-interface GetTaskByUserParams {
-	userId: string;
+interface GetTaskByUserParams extends PaginatedSearchParams {
+	userId?: string;
 }
 
 interface SetTaskToCompleteParams {

@@ -19,6 +19,14 @@ interface RouteParams {
 	searchParams: Promise<Record<string, string>>;
 }
 
+interface PaginatedSearchParams {
+	page?: number;
+	pageSize?: number;
+	query?: string;
+	filter?: string;
+	sort?: string;
+}
+
 type ActionType = 'PROFILE_UPDATE' | 'PASSWORD_CHANGE' | 'PASSWORD_RESET';
 type TaskStatus = 'complete' | 'delete' | 'on-progress' | 'incomplete';
 type TaskPriority = 'do' | 'schedule' | 'delegate' | 'delete';

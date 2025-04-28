@@ -1,8 +1,8 @@
 import React from 'react';
 import { getTaskByUser } from '@/lib/actions/task.action';
 import { Task } from '@/types/global';
-import Matrix from './Matrix';
 import { toast } from 'sonner';
+import Matrix from './Matrix';
 
 interface FilterPriority {
 	do: Task[];
@@ -12,17 +12,19 @@ interface FilterPriority {
 }
 
 const EisenhowerMatrix = async ({ userId }: { userId: string }) => {
-	const { success, data, error } = await getTaskByUser();
+	const { success, data, error } = await getTaskByUser({});
 
 	if (!success) {
 		return null;
 	}
 
+	const tasks = data?.tasks!;
+
 	const filterPriority: FilterPriority = {
-		do: data!.filter((task) => task.priority === 'do'),
-		schedule: data!.filter((task) => task.priority === 'schedule'),
-		delegate: data!.filter((task) => task.priority === 'delegate'),
-		delete: data!.filter((task) => task.priority === 'delete'),
+		do: tasks.filter((task) => task.priority === 'do'),
+		schedule: tasks.filter((task) => task.priority === 'schedule'),
+		delegate: tasks.filter((task) => task.priority === 'delegate'),
+		delete: tasks.filter((task) => task.priority === 'delete'),
 	};
 
 	return (

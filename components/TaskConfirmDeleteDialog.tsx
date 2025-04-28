@@ -11,6 +11,7 @@ import {
 } from './ui/dialog';
 import { LoaderCircleIcon, Trash2Icon, X } from 'lucide-react';
 import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
 
 const TaskConfirmDeleteDialog = ({
 	isSubmitting,
@@ -30,7 +31,7 @@ const TaskConfirmDeleteDialog = ({
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button className="delete-btn w-fit self-end" size="lg">
+				<Button className={cn('delete-btn w-fit self-end')} size="lg">
 					<Trash2Icon className="size-5" />
 				</Button>
 			</DialogTrigger>

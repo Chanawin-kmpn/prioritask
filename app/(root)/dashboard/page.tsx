@@ -30,8 +30,6 @@ const page = async ({ searchParams }: RouteParams) => {
 		filter: filters,
 	});
 
-	console.log(data);
-
 	if (!success) {
 		console.error(error?.message);
 

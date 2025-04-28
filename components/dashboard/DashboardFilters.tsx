@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Select,
 	SelectContent,
@@ -11,7 +11,6 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { formUrlQuery, removeKeysFormUrlQuery } from '@/lib/url';
 import { Button } from '../ui/button';
-import { undefined } from 'zod';
 
 interface Filter {
 	name: string;
@@ -25,11 +24,25 @@ interface Props {
 const DashboardFilters = ({ filters }: Props) => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const createAtValue = searchParams.get('createdAt');
+	const priorityTypeValue = searchParams.get('priorityType');
+	const priorityStatusValue = searchParams.get('priorityStatus');
+
 	const [selectedFilters, setSelectedFilters] = useState<
 		Record<string, string>
 	>({});
+
+	// ตั้งค่าเริ่มต้นจาก searchParams
+	useEffect(() => {
+		setSelectedFilters({
+			createdAt: createAtValue || '',
+			priorityType: priorityTypeValue || '',
+			priorityStatus: priorityStatusValue || '',
+		});
+	}, [createAtValue, priorityTypeValue, priorityStatusValue]);
+
 	const handleUpdateParmas = (key: string, value: string) => {
-		setSelectedFilters({ [key]: value });
+		setSelectedFilters((prev) => ({ ...prev, [key]: value }));
 
 		const newUrl = formUrlQuery({
 			params: searchParams.toString(),
@@ -53,21 +66,21 @@ const DashboardFilters = ({ filters }: Props) => {
 		<div className="bg-light100_dark800 max-h- flex items-center gap-16 overflow-y-auto rounded-[28px] border border-gray-100 p-8">
 			<p className="text-dark100_light200 text-2xl font-bold">Filter by:</p>
 			<div className="flex flex-1 items-center gap-8">
-				{Object.entries(filters).map(([Key, value]) => (
-					<div key={Key}>
+				{Object.entries(filters).map(([key, value]) => (
+					<div key={key}>
 						<p className="text-lg font-bold">
-							{Key === 'createdAt'
+							{key === 'createdAt'
 								? 'Created at'
-								: Key === 'priorityType'
+								: key === 'priorityType'
 									? 'Priority type'
 									: 'Task status'}
 						</p>
 						<Select
-							defaultValue={selectedFilters[Key]}
-							onValueChange={(value) => handleUpdateParmas(Key, value)}
+							value={selectedFilters[key] || ''}
+							onValueChange={(value) => handleUpdateParmas(key, value)}
 						>
 							<SelectTrigger className="w-[180px]">
-								<SelectValue placeholder="Select a filters" />
+								<SelectValue placeholder="Select a filter" />
 							</SelectTrigger>
 							<SelectContent>
 								<SelectGroup>
@@ -87,7 +100,7 @@ const DashboardFilters = ({ filters }: Props) => {
 				className="text-dark100_light200"
 				variant="link"
 			>
-				Clear a filters
+				Clear filters
 			</Button>
 		</div>
 	);

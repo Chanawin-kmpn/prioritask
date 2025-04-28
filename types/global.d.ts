@@ -23,7 +23,11 @@ interface PaginatedSearchParams {
 	page?: number;
 	pageSize?: number;
 	query?: string;
-	filter?: string;
+	filter?: {
+		createdAt?: string | undefined;
+		priorityType?: string | undefined;
+		priorityStatus?: string | undefined;
+	};
 	sort?: string;
 }
 

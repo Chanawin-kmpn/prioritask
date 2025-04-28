@@ -140,90 +140,49 @@ export async function getTaskByUser(
 	const { page = 1, pageSize = 10 } = params;
 	const skip = (Number(page) - 1) * Number(pageSize);
 	const limit = pageSize;
+	const {
+		createdAt: createdAtFilter,
+		priorityStatus,
+		priorityType,
+	} = params.filter || {};
 
 	try {
 		const userId = validationResult.user?.uid;
 
-		// คำสั่ง query สำหรับดึงข้อมูล
-		const query = firestore
-			.collection('tasks')
-			.where('userId', '==', userId)
-			.orderBy('createdAt', 'asc')
-			.limit(limit) // เพิ่มกฎ limit ที่นี่
-			.offset(skip); // เพิ่ม offset เพื่อข้ามงานที่ไม่ต้องการ
+		// เริ่มต้น Query
+		let query = firestore.collection('tasks').where('userId', '==', userId);
 
-		const tasksData = await query.get(); // ดึงข้อมูลตาม query
+		// เพิ่มฟิลเตอร์ตามที่ได้รับ
+		if (createdAtFilter) {
+			if (createdAtFilter === 'newest') {
+				query = query.orderBy('createdAt', 'desc');
+			} else if (createdAtFilter === 'oldest') {
+				query = query.orderBy('createdAt', 'asc');
+			}
+		}
+
+		if (priorityStatus) {
+			query = query.where('status', '==', priorityStatus);
+		}
+
+		if (priorityType) {
+			query = query.where('priority', '==', priorityType);
+		}
+
+		// ดึงข้อมูลตาม query
+		const tasksData = await query.limit(limit).offset(skip).get();
 		const tasks: Task[] = tasksData.docs.map((data) => ({
 			...(data.data() as Task),
-			id: data.id, // แน่ใจว่าสามารถใช้ ID ได้
+			id: data.id,
 		}));
 
-		// ตรวจสอบวันหมดอายุ
-		const currentDate = new Date();
+		// นับจำนวน Task ที่ตรงตามเงื่อนไขฟิลเตอร์
+		const totalTasksSnapshot = await query.get(); // ใช้ query เดียวกันเพื่อดึงจำนวนเอกสารทั้งหมด
+		const totalTasks = totalTasksSnapshot.size; // นับจำนวน Task ที่ตรงตามฟิลเตอร์
 
-		// Task ที่หมดอายุ
-		const expiredTasks = tasks.filter((task) => {
-			return task.expirationDate
-				? new Date(task.expirationDate) < currentDate
-				: false;
-		});
+		const isNext = totalTasks > skip + tasks.length; // ตรวจสอบว่ามีหน้าถัดไปหรือไม่
 
-		// Task ที่มีสถานะเป็น "complete", "delete", หรือ "incomplete" ที่หมดอายุ
-		const tasksToDelete = expiredTasks.filter((task) => {
-			return (
-				task.status === ('complete' as TaskStatus) ||
-				task.status === ('delete' as TaskStatus) ||
-				task.status === ('incomplete' as TaskStatus)
-			);
-		});
-
-		// ลบ Task ที่หมดอายุ
-		const deletePromises = tasksToDelete.map((task) => {
-			return firestore.collection('tasks').doc(task.id).delete();
-		});
-		await Promise.all(deletePromises); // รอให้ Task ทั้งหมดถูกลบ
-
-		// กรอง Task ที่เหลือจะเก็บ Task ที่ยังไม่หมดอายุและมีสถานะเป็น "on-process"
-		const remainingTasks = tasks.filter(
-			(task) => !expiredTasks.some((expiredTask) => expiredTask.id === task.id)
-		);
-
-		const updatePromises = remainingTasks.map(async (task) => {
-			const dueDate = new Date(normalize(task.dueDate));
-
-			// ถ้าไม่มี dueTime ให้ตั้งเวลาเป็น 00:00
-			const dueTime = task.dueTime
-				? new Date(
-						dueDate.setHours(
-							Number(task.dueTime.split(':')[0]),
-							Number(task.dueTime.split(':')[1])
-						)
-					)
-				: new Date(dueDate.setHours(23, 59)); // ใช้เวลา 23:59 ถ้าไม่มี dueTime
-
-			if (dueTime <= currentDate && task.status === 'on-progress') {
-				// อัปเดตสถานะเป็น "incomplete"
-				await firestore.collection('tasks').doc(task.id).update({
-					status: 'incomplete',
-				});
-				return { ...task, status: 'incomplete' }; // อัปเดตสถานะใน Task object
-			}
-
-			return task; // คืนค่า Task ถ้าไม่ต้องอัปเดต
-		});
-
-		const updatedTasks = await Promise.all(updatePromises); // รอให้การอัปเดตเสร็จสิ้น
-
-		// นับจำนวน Task ทั้งหมดเพื่อใช้ใน Pagination
-		const totalTasksQuery = firestore
-			.collection('tasks')
-			.where('userId', '==', userId)
-			.get();
-		const totalTasksSnapshot = await totalTasksQuery;
-		const totalTasks = totalTasksSnapshot.docs.length; // นับจำนวน Task ทั้งหมด
-		const isNext = totalTasks > skip + tasks.length; // เช็คว่ามีหน้าถัดไปหรือไม่
-
-		const normalizeTask = await normalize(updatedTasks);
+		const normalizeTask = await normalize(tasks);
 
 		return {
 			success: true,

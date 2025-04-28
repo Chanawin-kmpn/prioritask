@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import Matrix from './Matrix';
 import { useAuth } from '@/context/Auth';
 import TaskLimitAlertDialog from '../TaskLimitAlertDialog';
-import { Button } from '../ui/button';
 
 const GuestEisenhowerMatrix = () => {
 	const [open, setOpen] = useState(false);

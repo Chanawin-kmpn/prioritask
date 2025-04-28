@@ -176,13 +176,64 @@ export async function getTaskByUser(
 			id: data.id,
 		}));
 
+		const currentDate = new Date();
+
+		const expiredTasks = tasks.filter((task) => {
+			return task.expirationDate
+				? new Date(task.expirationDate) < currentDate
+				: false;
+		});
+
+		const tasksToDelete = expiredTasks.filter((task) => {
+			return (
+				task.status === ('complete' as TaskStatus) ||
+				task.status === ('delete' as TaskStatus) ||
+				task.status === ('incomplete' as TaskStatus)
+			);
+		});
+
+		const deletePromises = tasksToDelete.map((task) => {
+			return firestore.collection('tasks').doc(task.id).delete();
+		});
+		await Promise.all(deletePromises); // รอให้ Task ทั้งหมดถูกลบ
+
+		// กรอง Task ที่เหลือจะเก็บ Task ที่ยังไม่หมดอายุและมีสถานะเป็น "on-process"
+		const remainingTasks = tasks.filter(
+			(task) => !expiredTasks.some((expiredTask) => expiredTask.id === task.id)
+		);
+
+		const updatePromises = remainingTasks.map(async (task) => {
+			const dueDate = new Date(normalize(task.dueDate));
+
+			// ถ้าไม่มี dueTime ให้ตั้งเวลาเป็น 00:00
+			const dueTime = task.dueTime
+				? new Date(
+						dueDate.setHours(
+							Number(task.dueTime.split(':')[0]),
+							Number(task.dueTime.split(':')[1])
+						)
+					)
+				: new Date(dueDate.setHours(23, 59)); // ใช้เวลา 23:59 ถ้าไม่มี dueTime
+
+			if (dueTime <= currentDate && task.status === 'on-progress') {
+				// อัปเดตสถานะเป็น "incomplete"
+				await firestore.collection('tasks').doc(task.id).update({
+					status: 'incomplete',
+				});
+				return { ...task, status: 'incomplete' }; // อัปเดตสถานะใน Task object
+			}
+
+			return task; // คืนค่า Task ถ้าไม่ต้องอัปเดต
+		});
+
+		const updatedTasks = await Promise.all(updatePromises); // รอให้การอัปเดตเสร็จสิ้น
 		// นับจำนวน Task ที่ตรงตามเงื่อนไขฟิลเตอร์
 		const totalTasksSnapshot = await query.get(); // ใช้ query เดียวกันเพื่อดึงจำนวนเอกสารทั้งหมด
 		const totalTasks = totalTasksSnapshot.size; // นับจำนวน Task ที่ตรงตามฟิลเตอร์
 
 		const isNext = totalTasks > skip + tasks.length; // ตรวจสอบว่ามีหน้าถัดไปหรือไม่
 
-		const normalizeTask = await normalize(tasks);
+		const normalizeTask = await normalize(updatedTasks);
 
 		return {
 			success: true,

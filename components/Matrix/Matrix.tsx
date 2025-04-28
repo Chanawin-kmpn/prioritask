@@ -2,14 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import TaskForm from '../forms/TaskForm';
 import { Task, TaskPriority } from '@/types/global';
-import { useRouter } from 'next/navigation';
 import { getLocalStorageWithExpiry } from '@/lib/utils';
 import TaskCard from '../cards/TaskCard';
 
 interface MatrixProps {
 	priorityType: TaskPriority;
 	customBorder: string;
-	dotColor: string; // สีของ task ในแต่ละ quadrant (optional)
+	dotColor: string;
 	tasks: Task[];
 	isGuest?: boolean;
 	handleOpenDialog?: (priorityType: string, taskCount: number) => void;
@@ -38,10 +37,19 @@ const Matrix = ({
 		if (isGuest && tasks.length === 0) {
 			const guestTasks = getLocalStorageWithExpiry('guestTasks');
 
+			const currentDate = new Date();
 			// กรอง guestTasks โดย priorityType
-			const filteredGuestTasks = guestTasks.filter(
-				(task: Task) => task.priority === priorityType
+			const filteredGuestTasks = guestTasks.filter((task: Task) => {
+				const isDueDateValid = new Date(task.dueDate) >= currentDate;
+				if (!isDueDateValid) {
+					return false;
+				}
+				return task.priority === priorityType;
+			});
+			const validTasks = guestTasks.filter(
+				(task: Task) => new Date(task.dueDate) >= currentDate
 			);
+			localStorage.setItem('guestTasks', JSON.stringify(validTasks)); // เซฟค่าใหม่กลับไปที่ localStorage
 			setTasks(
 				filteredGuestTasks.filter((task: Task) => task.status === 'on-progress')
 			); // อัปเดตสถานะ tasks ด้วย guestTasks ที่ถูกกรอง

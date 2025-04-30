@@ -30,13 +30,15 @@ const TabbarCharts = ({ chartDataCompletion, chartDataPriority }: Props) => {
 	const getTitleAndDescription = () => {
 		if (activeTab === 'priority') {
 			return {
-				title: 'Priority',
-				description: 'This shows tasks categorized by priority type.',
+				title: 'Tasks by Priority Completed Daily',
+				description:
+					'Showing total tasks finished each day by priority type (Hover over bars for more details)',
 			};
 		} else {
 			return {
-				title: 'Completion',
-				description: 'This shows the completion rate of tasks.',
+				title: 'Completion Rate',
+				description:
+					'Overall completion rate of tasks this month (Hover over bars for more details)',
 			};
 		}
 	};
@@ -48,18 +50,27 @@ const TabbarCharts = ({ chartDataCompletion, chartDataPriority }: Props) => {
 			onValueChange={setActiveTab}
 			className="w-full"
 		>
-			<Card>
-				<CardHeader>
-					<div>
-						<CardTitle>{title}</CardTitle>
-						<CardDescription>{description}</CardDescription>
+			<Card className="p-0">
+				<div className="bg-light100_dark800 flex border-b border-gray-100">
+					<div className="flex-2 border-r p-8">
+						<CardTitle className="text-3xl">{title}</CardTitle>
+						<CardDescription className="text-xl">{description}</CardDescription>
 					</div>
-					<TabsList>
-						<TabsTrigger value="priority">Priority type</TabsTrigger>
-						<TabsTrigger value="completion">Completion rate</TabsTrigger>
-					</TabsList>
-				</CardHeader>
-				<CardContent>
+					<div className="h-full flex-1 p-8">
+						<TabsList className="h-full">
+							<TabsTrigger className="cursor-pointer text-3xl" value="priority">
+								Priority type
+							</TabsTrigger>
+							<TabsTrigger
+								className="cursor-pointer text-3xl"
+								value="completion"
+							>
+								Completion rate
+							</TabsTrigger>
+						</TabsList>
+					</div>
+				</div>
+				<CardContent className="p-8">
 					<TabsContent value="priority">
 						<ChartContainer
 							config={chartDataPriorityConfig}
@@ -73,7 +84,7 @@ const TabbarCharts = ({ chartDataCompletion, chartDataPriority }: Props) => {
 									tickLine={false}
 									tickMargin={16}
 									axisLine={true}
-									tickFormatter={(value) => value.slice(0, 2)}
+									tickFormatter={(value) => value.split(',')[0]}
 								/>
 
 								<Bar

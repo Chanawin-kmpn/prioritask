@@ -138,7 +138,7 @@ const getFormattedDate = (day: number, month: number): string => {
 		'November',
 		'December',
 	];
-	return `${day} ${monthNames[month]}`;
+	return `${day}, ${monthNames[month]}`;
 };
 
 const getDaysInMonth = (month: number, year: number): number => {

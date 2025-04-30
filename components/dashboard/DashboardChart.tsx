@@ -23,7 +23,7 @@ const DashboardChart = async () => {
 	) as ChartDataPriority[];
 
 	return (
-		<div className="bg-light100_dark800 max-h- flex items-center gap-16 overflow-y-auto rounded-[28px] border border-gray-100 p-8">
+		<div className="bg-light100_dark800 max-h- flex items-center gap-16 overflow-y-auto rounded-[28px] border border-gray-100">
 			<TabbarCharts
 				chartDataCompletion={chartDataCompletion}
 				chartDataPriority={chartDataPriority}

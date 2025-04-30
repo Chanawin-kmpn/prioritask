@@ -1,5 +1,5 @@
 import React from 'react';
-import { getTaskByUser } from '@/lib/actions/task.action';
+import { getAllTasksByUser, getTaskByUser } from '@/lib/actions/task.action';
 import { Task } from '@/types/global';
 import { toast } from 'sonner';
 import Matrix from './Matrix';
@@ -12,13 +12,13 @@ interface FilterPriority {
 }
 
 const EisenhowerMatrix = async ({ userId }: { userId: string }) => {
-	const { success, data, error } = await getTaskByUser({});
+	const { success, data, error } = await getAllTasksByUser();
 
 	if (!success) {
 		return null;
 	}
 
-	const tasks = data?.tasks!;
+	const tasks = data || [];
 
 	const filterPriority: FilterPriority = {
 		do: tasks.filter((task) => task.priority === 'do'),

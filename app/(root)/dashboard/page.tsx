@@ -1,3 +1,4 @@
+import DashboardChart from '@/components/dashboard/DashboardChart';
 import DashboardFilters from '@/components/dashboard/DashboardFilters';
 import DashboardTable from '@/components/dashboard/DashboardTable';
 import Pagination from '@/components/Pagination';
@@ -25,7 +26,7 @@ const page = async ({ searchParams }: RouteParams) => {
 
 	const { success, data, error } = await getTaskByUser({
 		page: Number(page) || 1,
-		pageSize: Number(pageSize) || 5,
+		pageSize: Number(pageSize) || 10,
 		query,
 		filter: filters,
 	});
@@ -46,6 +47,7 @@ const page = async ({ searchParams }: RouteParams) => {
 				<div className="mx-auto mt-8 w-fit">
 					<Pagination page={page} isNext={isNext || false} />
 				</div>
+				<DashboardChart />
 			</div>
 		</div>
 	);

@@ -150,14 +150,23 @@ export async function getTaskByUser(
 		const userId = validationResult.user?.uid;
 
 		// เริ่มต้น Query
-		let query = firestore.collection('tasks').where('userId', '==', userId);
+		let query = firestore
+			.collection('tasks')
+			.where('userId', '==', userId)
+			.orderBy('createdAt', 'asc');
 
 		// เพิ่มฟิลเตอร์ตามที่ได้รับ
 		if (createdAtFilter) {
 			if (createdAtFilter === 'newest') {
-				query = query.orderBy('createdAt', 'desc');
+				query = firestore
+					.collection('tasks')
+					.where('userId', '==', userId)
+					.orderBy('createdAt', 'desc');
 			} else if (createdAtFilter === 'oldest') {
-				query = query.orderBy('createdAt', 'asc');
+				query = firestore
+					.collection('tasks')
+					.where('userId', '==', userId)
+					.orderBy('createdAt', 'asc');
 			}
 		}
 
@@ -238,6 +247,97 @@ export async function getTaskByUser(
 		return {
 			success: true,
 			data: { tasks: JSON.parse(JSON.stringify(normalizeTask)), isNext },
+		};
+	} catch (error) {
+		return handleError(error) as ErrorResponse;
+	}
+}
+
+export async function getAllTasksByUser(): Promise<ActionResponse<Task[]>> {
+	const validationResult = await action({
+		authorize: true,
+	});
+
+	if (validationResult instanceof Error) {
+		return handleError(validationResult) as ErrorResponse;
+	}
+
+	try {
+		const userId = validationResult.user?.uid;
+
+		// เริ่มต้น Query
+		let query = firestore
+			.collection('tasks')
+			.where('userId', '==', userId)
+			.orderBy('createdAt', 'asc');
+
+		// ดึงข้อมูลตาม query
+		const tasksData = await query.get();
+		const tasks: Task[] = tasksData.docs.map((data) => ({
+			...(data.data() as Task),
+			id: data.id,
+		}));
+
+		const currentDate = new Date();
+
+		const expiredTasks = tasks.filter((task) => {
+			return task.expirationDate
+				? new Date(task.expirationDate) < currentDate
+				: false;
+		});
+
+		const tasksToDelete = expiredTasks.filter((task) => {
+			return (
+				task.status === ('complete' as TaskStatus) ||
+				task.status === ('delete' as TaskStatus) ||
+				task.status === ('incomplete' as TaskStatus)
+			);
+		});
+
+		const deletePromises = tasksToDelete.map((task) => {
+			return firestore.collection('tasks').doc(task.id).delete();
+		});
+		await Promise.all(deletePromises); // รอให้ Task ทั้งหมดถูกลบ
+
+		// กรอง Task ที่เหลือจะเก็บ Task ที่ยังไม่หมดอายุและมีสถานะเป็น "on-process"
+		const remainingTasks = tasks.filter(
+			(task) => !expiredTasks.some((expiredTask) => expiredTask.id === task.id)
+		);
+
+		const updatePromises = remainingTasks.map(async (task) => {
+			const dueDate = new Date(normalize(task.dueDate));
+
+			// ถ้าไม่มี dueTime ให้ตั้งเวลาเป็น 00:00
+			const dueTime = task.dueTime
+				? new Date(
+						dueDate.setHours(
+							Number(task.dueTime.split(':')[0]),
+							Number(task.dueTime.split(':')[1])
+						)
+					)
+				: new Date(dueDate.setHours(23, 59)); // ใช้เวลา 23:59 ถ้าไม่มี dueTime
+
+			if (dueTime <= currentDate && task.status === 'on-progress') {
+				// อัปเดตสถานะเป็น "incomplete"
+				await firestore.collection('tasks').doc(task.id).update({
+					status: 'incomplete',
+				});
+				return { ...task, status: 'incomplete' }; // อัปเดตสถานะใน Task object
+			}
+
+			return task; // คืนค่า Task ถ้าไม่ต้องอัปเดต
+		});
+
+		const updatedTasks = await Promise.all(updatePromises); // รอให้การอัปเดตเสร็จสิ้น
+		// นับจำนวน Task ที่ตรงตามเงื่อนไขฟิลเตอร์
+		const totalTasksSnapshot = await query.get(); // ใช้ query เดียวกันเพื่อดึงจำนวนเอกสารทั้งหมด
+		const totalTasks = totalTasksSnapshot.size; // นับจำนวน Task ที่ตรงตามฟิลเตอร์
+
+		const normalizeTask = await normalize(updatedTasks);
+
+		return {
+			success: true,
+			data: JSON.parse(JSON.stringify(normalizeTask)),
 		};
 	} catch (error) {
 		return handleError(error) as ErrorResponse;

@@ -59,3 +59,19 @@ interface Task {
 	createdAt: Timestamp | Date;
 	updatedAt: Timestamp | Date;
 }
+
+type ChartDataCompletion = {
+	date: string;
+	complete: number;
+	incomplete: number;
+};
+
+type ChartDataPriority = {
+	date: string; // วันในเดือน
+	do: number; // จำนวนที่มี priority เป็น 'do'
+	schedule: number; // จำนวนที่มี priority เป็น 'schedule'
+	delegate: number; // จำนวนที่มี priority เป็น 'delegate'
+	delete: number; // จำนวนที่มี priority เป็น 'delete'
+};
+
+type ChartData = ChartDataCompletion | ChartDataPriority;

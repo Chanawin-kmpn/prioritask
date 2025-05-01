@@ -13,13 +13,7 @@ import {
 	chartDataPriorityConfig,
 } from '@/constants/chartConfig';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from '../ui/card';
+import { Card, CardContent, CardDescription, CardTitle } from '../ui/card';
 
 interface Props {
 	chartDataCompletion: ChartDataCompletion[];
@@ -89,23 +83,23 @@ const TabbarCharts = ({ chartDataCompletion, chartDataPriority }: Props) => {
 
 								<Bar
 									dataKey="delete"
-									stackId="a"
 									fill={chartDataPriorityConfig.delete.color}
+									stackId="a"
 								/>
 								<Bar
 									dataKey="delegate"
-									stackId="a"
 									fill={chartDataPriorityConfig.delegate.color}
+									stackId="a"
 								/>
 								<Bar
 									dataKey="schedule"
-									stackId="a"
 									fill={chartDataPriorityConfig.schedule.color}
+									stackId="a"
 								/>
 								<Bar
 									dataKey="do"
-									stackId="a"
 									fill={chartDataPriorityConfig.do.color}
+									stackId="a"
 								/>
 							</BarChart>
 						</ChartContainer>
@@ -123,19 +117,17 @@ const TabbarCharts = ({ chartDataCompletion, chartDataPriority }: Props) => {
 									tickLine={false}
 									tickMargin={16}
 									axisLine={true}
-									tickFormatter={(value) => value.slice(0, 2)}
+									tickFormatter={(value) => value.split(',')[0]}
 								/>
 								<Bar
 									dataKey="complete"
 									fill={chartDataCompletionConfig.complete.color}
-									radius={4}
-									stackId="a"
+									stackId="b"
 								/>
 								<Bar
 									dataKey="incomplete"
 									fill={chartDataCompletionConfig.incomplete.color}
-									radius={4}
-									stackId="a"
+									stackId="b"
 								/>
 							</BarChart>
 						</ChartContainer>

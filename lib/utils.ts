@@ -122,7 +122,6 @@ export const convertTimestampToDate = (timestamp: {
 }): Date => {
 	return new Date(timestamp._seconds * 1000 + timestamp._nanoseconds / 1000000);
 };
-
 const getFormattedDate = (day: number, month: number): string => {
 	const monthNames = [
 		'January',
@@ -145,14 +144,12 @@ const getDaysInMonth = (month: number, year: number): number => {
 	return new Date(year, month + 1, 0).getDate(); // คืนค่าจำนวนวันในเดือน
 };
 
-export const chartDataGenerater = (
+const generateCompletionData = (
 	taskData: Task[],
-	dataType: string
-): ChartDataCompletion[] | ChartDataPriority[] => {
-	const currentDate = new Date();
-	const currentMonth = currentDate.getMonth(); // เดือนปัจจุบัน (0-11)
-	const currentYear = currentDate.getFullYear();
-	let chartData: ChartData[] = [];
+	currentMonth: number,
+	currentYear: number
+): ChartDataCompletion[] => {
+	let chartData: ChartDataCompletion[] = [];
 
 	// สร้างโครงสร้างสำหรับวันที่ทั้งหมดในเดือน
 	for (let day = 1; day <= getDaysInMonth(currentMonth, currentYear); day++) {
@@ -161,6 +158,52 @@ export const chartDataGenerater = (
 			date: formattedDate,
 			complete: 0,
 			incomplete: 0,
+		});
+	}
+
+	// ประมวลผลข้อมูลการทำงาน
+	taskData.forEach((task) => {
+		let taskDate: Date | null = null;
+
+		if (task.status === 'complete') {
+			taskDate = new Date(task.completedAt as Date);
+		} else if (task.status === 'incomplete') {
+			taskDate = new Date(task.dueDate);
+		}
+
+		if (
+			taskDate &&
+			taskDate.getMonth() === currentMonth &&
+			taskDate.getFullYear() === currentYear
+		) {
+			const day = taskDate.getDate();
+			const formattedDate = getFormattedDate(day, currentMonth);
+			const existingData = chartData.find(
+				(item) => item.date === formattedDate
+			);
+
+			if (existingData) {
+				existingData.complete += task.status === 'complete' ? 1 : 0;
+				existingData.incomplete += task.status === 'incomplete' ? 1 : 0;
+			}
+		}
+	});
+
+	return chartData;
+};
+
+const generatePriorityData = (
+	taskData: Task[],
+	currentMonth: number,
+	currentYear: number
+): ChartDataPriority[] => {
+	let chartData: ChartDataPriority[] = [];
+
+	// สร้างโครงสร้างสำหรับวันที่ทั้งหมดในเดือน
+	for (let day = 1; day <= getDaysInMonth(currentMonth, currentYear); day++) {
+		const formattedDate = getFormattedDate(day, currentMonth);
+		chartData.push({
+			date: formattedDate,
 			do: 0,
 			schedule: 0,
 			delegate: 0,
@@ -168,66 +211,58 @@ export const chartDataGenerater = (
 		});
 	}
 
-	if (dataType === 'completion') {
-		taskData.forEach((task) => {
-			const taskDate = new Date(task.dueDate);
+	const priorityData: Record<string, Record<string, number>> = {};
 
-			if (
-				taskDate.getMonth() === currentMonth &&
-				taskDate.getFullYear() === currentYear
-			) {
-				const day = taskDate.getDate();
-				const formattedDate = getFormattedDate(day, currentMonth);
-				const existingData = chartData.find(
-					(item) => item.date === formattedDate
-				) as ChartDataCompletion | undefined;
+	// ประมวลผลข้อมูลลำดับความสำคัญ
+	taskData.forEach((task) => {
+		const taskDate = new Date(task.createdAt as Date);
+		if (
+			taskDate.getMonth() === currentMonth &&
+			taskDate.getFullYear() === currentYear
+		) {
+			const day = taskDate.getDate();
+			const formattedDate = getFormattedDate(day, currentMonth);
+			const priority = task.priority;
 
-				if (existingData) {
-					existingData.complete += task.status === 'complete' ? 1 : 0;
-					existingData.incomplete += task.status === 'incomplete' ? 1 : 0;
-				}
+			if (!priorityData[formattedDate]) {
+				priorityData[formattedDate] = {
+					do: 0,
+					schedule: 0,
+					delegate: 0,
+					delete: 0,
+				};
 			}
-		});
-		return chartData as ChartDataCompletion[];
-	} else if (dataType === 'priority') {
-		const priorityData: Record<string, Record<string, number>> = {};
-
-		taskData.forEach((task) => {
-			const taskDate = new Date(task.dueDate);
-			if (
-				taskDate.getMonth() === currentMonth &&
-				taskDate.getFullYear() === currentYear
-			) {
-				const day = taskDate.getDate();
-				const formattedDate = getFormattedDate(day, currentMonth);
-				const priority = task.priority;
-
-				if (!priorityData[formattedDate]) {
-					priorityData[formattedDate] = {
-						do: 0,
-						schedule: 0,
-						delegate: 0,
-						delete: 0,
-					};
-				}
-				if (priorityData[formattedDate][priority] !== undefined) {
-					priorityData[formattedDate][priority] += 1;
-				}
-			}
-		});
-
-		for (const date in priorityData) {
-			const existingData = chartData.find((item) => item.date === date) as
-				| ChartDataPriority
-				| undefined;
-			if (existingData) {
-				existingData.do += priorityData[date].do || 0;
-				existingData.schedule += priorityData[date].schedule || 0;
-				existingData.delegate += priorityData[date].delegate || 0;
-				existingData.delete += priorityData[date].delete || 0;
+			if (priorityData[formattedDate][priority] !== undefined) {
+				priorityData[formattedDate][priority] += 1;
 			}
 		}
-		return chartData as ChartDataPriority[];
+	});
+
+	for (const date in priorityData) {
+		const existingData = chartData.find((item) => item.date === date);
+		if (existingData) {
+			existingData.do += priorityData[date].do || 0;
+			existingData.schedule += priorityData[date].schedule || 0;
+			existingData.delegate += priorityData[date].delegate || 0;
+			existingData.delete += priorityData[date].delete || 0;
+		}
+	}
+
+	return chartData;
+};
+
+export const chartDataGenerater = (
+	taskData: Task[],
+	dataType: string
+): ChartDataCompletion[] | ChartDataPriority[] => {
+	const currentDate = new Date();
+	const currentMonth = currentDate.getMonth(); // เดือนปัจจุบัน (0-11)
+	const currentYear = currentDate.getFullYear();
+
+	if (dataType === 'completion') {
+		return generateCompletionData(taskData, currentMonth, currentYear);
+	} else if (dataType === 'priority') {
+		return generatePriorityData(taskData, currentMonth, currentYear);
 	}
 	return [];
 };

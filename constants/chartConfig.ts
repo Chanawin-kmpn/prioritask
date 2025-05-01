@@ -1,7 +1,9 @@
-export const chartDataCompletionConfig = {
+import { ChartConfig } from '@/components/ui/chart';
+
+export const chartDataCompletionConfig: ChartConfig = {
 	complete: {
 		label: 'Complete',
-		color: 'var(--color-safe',
+		color: 'var(--color-safe)',
 	},
 	incomplete: {
 		label: 'Incomplete',
@@ -9,21 +11,21 @@ export const chartDataCompletionConfig = {
 	},
 };
 
-export const chartDataPriorityConfig = {
+export const chartDataPriorityConfig: ChartConfig = {
 	do: {
 		label: 'Do',
 		color: 'var(--color-do',
 	},
 	schedule: {
 		label: 'Schedule',
-		color: 'var(--color-schedule',
+		color: 'var(--color-schedule)',
 	},
 	delegate: {
 		label: 'Delegate',
-		color: 'var(--color-delegate',
+		color: 'var(--color-delegate)',
 	},
 	delete: {
 		label: 'Delete',
-		color: 'var(--color-delete',
+		color: 'var(--color-delete)',
 	},
 };

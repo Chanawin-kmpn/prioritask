@@ -140,6 +140,25 @@ const getFormattedDate = (day: number, month: number): string => {
 	return `${day}, ${monthNames[month]}`;
 };
 
+export const getCurrentMonth = () => {
+	const date = new Date();
+	const monthNames = [
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December',
+	];
+	return `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+};
+
 const getDaysInMonth = (month: number, year: number): number => {
 	return new Date(year, month + 1, 0).getDate(); // คืนค่าจำนวนวันในเดือน
 };

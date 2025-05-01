@@ -5,6 +5,7 @@ import React, { useMemo, useState } from 'react';
 
 import { Pie, Sector, Label, PieChart } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { getCurrentMonth } from '@/lib/utils';
 
 const SummaryTaskChart = ({
 	chartDataPriority,
@@ -52,24 +53,7 @@ const SummaryTaskChart = ({
 		},
 	];
 
-	const currentMonth = useMemo(() => {
-		const date = new Date();
-		const monthNames = [
-			'January',
-			'February',
-			'March',
-			'April',
-			'May',
-			'June',
-			'July',
-			'August',
-			'September',
-			'October',
-			'November',
-			'December',
-		];
-		return `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-	}, []);
+	const currentMonth = getCurrentMonth();
 
 	return (
 		<div className="bg-light100_dark800 flex flex-1 flex-col items-center justify-center gap-8 rounded-[28px] border border-gray-100 p-8">

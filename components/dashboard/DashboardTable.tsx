@@ -17,6 +17,7 @@ import dayjs from 'dayjs';
 import { Badge } from '../ui/badge';
 import { taskPriorityBadge, taskStatusBadge } from '@/constants';
 import TaskConfirmDeleteDialog from '../TaskConfirmDeleteDialog';
+import EmptyData from '../EmptyData';
 
 const DashboardTable = ({ data }: { data: Task[] }) => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,6 +41,8 @@ const DashboardTable = ({ data }: { data: Task[] }) => {
 			description: '🎯 One less thing to worry about—keep moving forward!',
 		});
 	};
+
+	console.log(data.length);
 
 	return (
 		<div className="bg-light100_dark800 max-h- overflow-y-auto rounded-[28px] border border-gray-100 p-8">

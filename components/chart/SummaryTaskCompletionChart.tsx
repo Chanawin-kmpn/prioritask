@@ -115,7 +115,7 @@ const SummaryTaskCompletionChart = ({
 					{Object.entries(chartDataCompletionConfig).map(([key, value]) => (
 						<div key={key} className="flex items-center gap-2">
 							<div
-								className={`size-4 rounded-[4px] bg-[${chartDataCompletionConfig[key].color}]`}
+								className={`size-4 rounded-[4px] ${value.label === 'Complete' ? 'bg-safe' : 'bg-danger'}`}
 							></div>
 							<p>{chartDataCompletionConfig[key].label}</p>
 						</div>

@@ -5,8 +5,8 @@ import Pagination from '@/components/Pagination';
 import { dashboardFilters } from '@/constants/filter';
 import { getTaskByUser } from '@/lib/actions/task.action';
 import { RouteParams } from '@/types/global';
-import { create } from 'domain';
-import React from 'react';
+import React, { Suspense } from 'react';
+import Loading from '../dashboard/loading';
 
 const page = async ({ searchParams }: RouteParams) => {
 	const {
@@ -39,17 +39,19 @@ const page = async ({ searchParams }: RouteParams) => {
 
 	const { isNext } = data || {};
 	return (
-		<div className="space-y-8 py-32">
-			<h1 className="text-dark100_light200">Dashboard</h1>
-			<div className="space-y-8">
-				<DashboardFilters filters={dashboardFilters} />
-				<DashboardTable data={data?.tasks!} />
-				<div className="mx-auto mt-8 w-fit">
-					<Pagination page={page} isNext={isNext || false} />
+		<Suspense fallback={<Loading />}>
+			<div className="space-y-8 py-32">
+				<h1 className="text-dark100_light200">Dashboard</h1>
+				<div className="space-y-8">
+					<DashboardFilters filters={dashboardFilters} />
+					<DashboardTable data={data?.tasks!} />
+					<div className="mx-auto mt-8 w-fit">
+						<Pagination page={page} isNext={isNext || false} />
+					</div>
+					<DashboardChart />
 				</div>
-				<DashboardChart />
 			</div>
-		</div>
+		</Suspense>
 	);
 };
 

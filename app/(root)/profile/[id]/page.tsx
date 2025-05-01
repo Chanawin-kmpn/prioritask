@@ -2,8 +2,9 @@ import ProfileDetail from '@/components/profile/ProfileDetail';
 import { getUserById } from '@/lib/actions/auth.action';
 import { RouteParams } from '@/types/global';
 import { redirect } from 'next/navigation';
-import React, { cache } from 'react';
+import React, { cache, Suspense } from 'react';
 import { toast } from 'sonner';
+import Loading from '../[id]/loading';
 
 //? หลักๆหน้านี้ใช้ auth.currentUser ในแสดงและแก้ไขข้อมูลยกเว้นแก้ displayname และ update เวลาที่แก้ไข ต้องแก้ใน database ด้วย
 
@@ -23,19 +24,21 @@ const ProfilePage = async ({ params }: RouteParams) => {
 		data?.user! || {};
 
 	return (
-		<div className="space-y-8 py-32">
-			<h1 className="text-dark100_light200">Account</h1>
-			<div className="space-y-8">
-				<ProfileDetail
-					id={uid}
-					username={username}
-					email={email}
-					providerType={providerType}
-					photoURL={photoURL}
-					createdAt={createdAt}
-				/>
+		<Suspense fallback={<Loading />}>
+			<div className="space-y-8 py-32">
+				<h1 className="text-dark100_light200">Account</h1>
+				<div className="space-y-8">
+					<ProfileDetail
+						id={uid}
+						username={username}
+						email={email}
+						providerType={providerType}
+						photoURL={photoURL}
+						createdAt={createdAt}
+					/>
+				</div>
 			</div>
-		</div>
+		</Suspense>
 	);
 };
 

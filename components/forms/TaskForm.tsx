@@ -373,9 +373,12 @@ export default function TaskForm({
 										<Checkbox
 											checked={field.value}
 											onCheckedChange={field.onChange}
+											disabled={true}
 										/>
 									</FormControl>
-									<FormLabel className="cursor-pointer">Notify me</FormLabel>
+									<FormLabel className="cursor-pointer">
+										Notify me (Work in progress)
+									</FormLabel>
 								</FormItem>
 							)}
 						/>

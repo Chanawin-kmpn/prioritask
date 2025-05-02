@@ -19,7 +19,7 @@ const TaskConfirmDeleteDialog = ({
 	taskId,
 	contents,
 }: {
-	isSubmitting: boolean;
+	isSubmitting?: boolean;
 	handleDeleteTask: (taskId?: string) => void;
 	taskId?: string;
 	contents: {

@@ -40,7 +40,7 @@ export const GET = async (request: NextRequest) => {
 
 		return NextResponse.redirect(new URL(path, request.url));
 	} catch (error) {
-		console.log('Failed to refresh token: ', error);
+		console.error('Failed to refresh token: ', error);
 		return NextResponse.redirect(new URL('/', request.url));
 	}
 };

@@ -78,9 +78,6 @@ async function checkServerRateLimit(
 			return { limited: false };
 		}
 
-		console.log('Data Attempts', data.attempts);
-		console.log('Max Attempts', maxAttempts);
-
 		// ถ้าเกินจำนวนครั้ง
 		if (data.attempts >= maxAttempts) {
 			const resetTime = new Date(

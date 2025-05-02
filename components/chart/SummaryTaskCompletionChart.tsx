@@ -35,7 +35,6 @@ const SummaryTaskCompletionChart = ({
 		},
 	];
 	const currentMonth = getCurrentMonth();
-	console.log(chartDataCompletion);
 
 	return (
 		<div className="bg-light100_dark800 flex flex-1 flex-col items-center justify-center gap-8 rounded-[28px] border border-gray-100 p-8">

@@ -1,34 +1,27 @@
 'use client';
 import { deleteTaskFromDashboard } from '@/lib/actions/task.action';
 import { Task } from '@/types/global';
-import React, { useState } from 'react';
+import React from 'react';
 import { toast } from 'sonner';
 import {
 	Table,
 	TableBody,
-	TableCaption,
-	TableCell,
-	TableFooter,
-	TableHead,
 	TableHeader,
 	TableRow,
+	TableHead,
+	TableCell,
 } from '../ui/table';
 import dayjs from 'dayjs';
 import { Badge } from '../ui/badge';
 import { taskPriorityBadge, taskStatusBadge } from '@/constants';
 import TaskConfirmDeleteDialog from '../TaskConfirmDeleteDialog';
-import EmptyData from '../EmptyData';
 
 const DashboardTable = ({ data }: { data: Task[] }) => {
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	// ฟังก์ชันนี้จะทำการลบ Task
 	const handleDeleteTask = async (taskId: string) => {
-		setIsSubmitting(true);
-
 		const { success, error } = await deleteTaskFromDashboard({
 			taskId,
 		});
-
-		setIsSubmitting(false);
 
 		if (!success) {
 			toast.error('Error', {
@@ -41,8 +34,6 @@ const DashboardTable = ({ data }: { data: Task[] }) => {
 			description: '🎯 One less thing to worry about—keep moving forward!',
 		});
 	};
-
-	console.log(data.length);
 
 	return (
 		<div className="bg-light100_dark800 max-h- overflow-y-auto rounded-[28px] border border-gray-100 p-8">
@@ -86,10 +77,7 @@ const DashboardTable = ({ data }: { data: Task[] }) => {
 							</TableCell>
 							<TableCell className="centre">
 								<TaskConfirmDeleteDialog
-									handleDeleteTask={(taskId) => {
-										if (taskId) handleDeleteTask(taskId);
-									}}
-									isSubmitting={isSubmitting}
+									handleDeleteTask={() => handleDeleteTask(task.id)}
 									taskId={task.id}
 									contents={{
 										title:

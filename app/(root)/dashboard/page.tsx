@@ -3,7 +3,7 @@ import DashboardFilters from '@/components/dashboard/DashboardFilters';
 import DashboardTable from '@/components/dashboard/DashboardTable';
 import Pagination from '@/components/Pagination';
 import { dashboardFilters } from '@/constants/filter';
-import { getTaskByUser } from '@/lib/actions/task.action';
+import { getTaskByFilters } from '@/lib/actions/task.action';
 import { RouteParams } from '@/types/global';
 import React, { Suspense } from 'react';
 import Loading from '../dashboard/loading';
@@ -25,7 +25,7 @@ const page = async ({ searchParams }: RouteParams) => {
 		priorityStatus: priorityStatus || undefined,
 	};
 
-	const { success, data, error } = await getTaskByUser({
+	const { success, data, error } = await getTaskByFilters({
 		page: Number(page) || 1,
 		pageSize: Number(pageSize) || 10,
 		query,

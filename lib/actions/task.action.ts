@@ -8,7 +8,7 @@ import {
 	DeleteTaskByIdParams,
 	DeleteTaskFromDashboardParams,
 	EditTaskParams,
-	GetTaskByUserParams,
+	GetTaskByFiltersParams,
 	SetTaskToCompleteParams,
 } from '@/types/action';
 import {
@@ -27,7 +27,6 @@ import {
 import { revalidatePath } from 'next/cache';
 import ROUTES from '@/constants/routes';
 import { EXPIRATION_TASK_DATE } from '@/constants/constants';
-import { convertTimestampToDate } from '../utils';
 
 const normalize = (obj: any): any => {
 	if (obj instanceof Timestamp) return obj.toMillis();
@@ -126,9 +125,9 @@ export async function createTask(
 	}
 }
 
-export async function getTaskByUser(
-	params: GetTaskByUserParams
-): Promise<ActionResponse<{ tasks: Task[]; isNext: boolean }>> {
+export async function getTaskByFilters(
+	params: GetTaskByFiltersParams
+): Promise<ActionResponse<{ tasks: Task[]; isNext?: boolean }>> {
 	const validationResult = await action({
 		authorize: true,
 	});

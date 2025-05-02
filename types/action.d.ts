@@ -46,7 +46,7 @@ interface CreateTaskParams {
 	userId?: string;
 }
 
-interface GetTaskByUserParams extends PaginatedSearchParams {
+interface GetTaskByFiltersParams extends PaginatedSearchParams {
 	userId?: string;
 }
 

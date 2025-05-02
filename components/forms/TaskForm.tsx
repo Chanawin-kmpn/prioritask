@@ -328,14 +328,14 @@ export default function TaskForm({
 							<>
 								<div className="divider" />
 								<div className="space-y-4">
-									<p className="">Task Detail</p>
+									<p className="">Task Priority</p>
 									{/* Task Priority */}
 									<FormField
 										control={form.control}
 										name="priority"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>Task Priority</FormLabel>
+												<FormLabel>Priority</FormLabel>
 												<FormControl>
 													<Select
 														onValueChange={(value) => {

@@ -11,7 +11,7 @@ const Navbar = () => {
 	const user = auth?.currentUser;
 
 	return (
-		<nav className="bg-light200_dark100 z-50 flex w-full">
+		<nav className="bg-light200_dark100 relative z-50 flex w-full">
 			<div className="flex-1 border-b py-4 pl-16">
 				<Link href="/" className="flex w-fit items-center">
 					<Image
@@ -23,7 +23,7 @@ const Navbar = () => {
 					/>
 				</Link>
 			</div>
-			<div className="border-dark-100 dark:border-light-200 bg-light200_dark100 relative flex min-w-[300px] items-center justify-center border-b border-l">
+			<div className="border-dark-100 dark:border-light-200 bg-light200_dark100 flex items-center justify-center border-b md:relative md:min-w-[300px] md:border-l">
 				{!user ? (
 					<Link
 						href={ROUTES.SIGN_IN}

@@ -20,8 +20,8 @@ const DropdownMenu = ({
 	return (
 		<div
 			className={cn(
-				'bg-light-200 dark:bg-dark-100 absolute top-full right-0 z-[-10] min-w-[300px] space-y-4 overflow-hidden border-t border-b border-l p-4 transition-all duration-200',
-				isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full'
+				'bg-light-200 dark:bg-dark-100 absolute top-full right-0 z-[-10] w-full space-y-4 overflow-hidden border-b p-4 transition-all duration-200 md:min-w-[300px] md:border-t md:border-l',
+				isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
 			)}
 		>
 			<ul role="menu" className="py-1">

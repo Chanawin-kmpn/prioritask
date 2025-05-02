@@ -66,7 +66,7 @@ const UserAvatar = ({
 				aria-expanded={isOpen}
 				aria-haspopup="menu"
 			>
-				<div className="flex flex-1 items-center gap-4">
+				<div className="flex flex-1 items-center justify-center gap-4">
 					<Avatar className={className}>
 						{photoURL ? (
 							<Image
@@ -87,11 +87,13 @@ const UserAvatar = ({
 							</AvatarFallback>
 						)}
 					</Avatar>
-					<p className="text-dark100_light200 text-base">{username}</p>
+					<p className="text-dark100_light200 hidden text-base md:block">
+						{username}
+					</p>
 				</div>
 				<ChevronDown
 					className={cn(
-						'text-dark100_light200 transition-transform duration-200',
+						'text-dark100_light200 hidden transition-transform duration-200 md:block',
 						isOpen ? 'rotate-180' : 'rotate-0'
 					)}
 				/>

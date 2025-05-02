@@ -12,7 +12,7 @@ const Navbar = () => {
 
 	return (
 		<nav className="bg-light200_dark100 relative z-50 flex w-full">
-			<div className="flex-1 border-b py-4 pl-16">
+			<div className="flex-1 border-b py-4 pl-4 lg:pl-16">
 				<Link href="/" className="flex w-fit items-center">
 					<Image
 						src="/images/prioritask-logo.png"
@@ -23,11 +23,11 @@ const Navbar = () => {
 					/>
 				</Link>
 			</div>
-			<div className="border-dark-100 dark:border-light-200 bg-light200_dark100 flex items-center justify-center border-b md:relative md:min-w-[300px] md:border-l">
+			<div className="border-dark-100 dark:border-light-200 bg-light200_dark100 flex items-center justify-center border-b lg:relative lg:min-w-[300px] lg:border-l">
 				{!user ? (
 					<Link
 						href={ROUTES.SIGN_IN}
-						className="font-bold tracking-[8px] uppercase"
+						className="pr-4 font-bold tracking-[8px] uppercase lg:p-0"
 					>
 						<span className="absolute inset-0"></span>
 						Sign In

@@ -54,3 +54,10 @@ export const taskPriorityBadge = {
 		className: 'bg-delete/20 text-delete',
 	},
 };
+
+export const taskStatus = {
+	do: 'Urgent and Important',
+	schedule: 'Not Urgent but Important',
+	delegate: 'Urgent but Not Important',
+	delete: 'Not Urgent and Not Important',
+};

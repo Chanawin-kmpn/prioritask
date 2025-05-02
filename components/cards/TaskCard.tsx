@@ -112,7 +112,7 @@ const TaskCard = ({
 	return (
 		<HoverCard openDelay={300}>
 			<HoverCardTrigger asChild>
-				<div className={`size-12 rounded-full ${dotColor} border`} />
+				<div className={`size-10 rounded-full md:size-12 ${dotColor} border`} />
 			</HoverCardTrigger>
 			<HoverCardContent className="w-[32rem]">
 				<Card>

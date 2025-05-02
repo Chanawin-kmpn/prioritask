@@ -173,7 +173,7 @@ export default function TaskForm({
 						<PencilIcon /> Edit
 					</Button>
 				) : (
-					<Button variant="outline" className="size-12 rounded-full">
+					<Button variant="outline" className="size-10 rounded-full md:size-12">
 						<Plus />
 					</Button>
 				)}

@@ -28,8 +28,8 @@ const EisenhowerMatrix = async ({ userId }: { userId: string }) => {
 	};
 
 	return (
-		<div className="relative p-14">
-			<div className="absolute top-0 flex w-full max-w-[1000px] text-center">
+		<div className="relative size-full p-4 lg:w-fit lg:p-14">
+			<div className="absolute top-0 hidden w-full max-w-[1000px] text-center lg:flex">
 				<span className="text-dark-100 dark:text-light-100 pointer-events-none flex-1 text-5xl">
 					Urgent
 				</span>
@@ -37,7 +37,7 @@ const EisenhowerMatrix = async ({ userId }: { userId: string }) => {
 					Not Urgent
 				</span>
 			</div>
-			<div className="grid w-fit grid-cols-2 justify-center">
+			<div className="grid w-full grid-cols-1 justify-center gap-8 lg:grid lg:w-fit lg:grid-cols-2 lg:gap-0">
 				<Matrix
 					userId={userId}
 					priorityType="do"
@@ -67,7 +67,7 @@ const EisenhowerMatrix = async ({ userId }: { userId: string }) => {
 					tasks={filterPriority.delete}
 				/>
 			</div>
-			<div className="absolute bottom-0 left-0 flex w-full max-w-[1000px] origin-top-left -rotate-90 text-center">
+			<div className="absolute bottom-0 left-0 hidden w-full max-w-[1000px] origin-top-left -rotate-90 text-center lg:flex">
 				<span className="text-dark-100 dark:text-light-100 pointer-events-none flex-1 text-5xl">
 					Not Important
 				</span>

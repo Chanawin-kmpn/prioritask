@@ -87,13 +87,13 @@ const UserAvatar = ({
 							</AvatarFallback>
 						)}
 					</Avatar>
-					<p className="text-dark100_light200 hidden text-base md:block">
+					<p className="text-dark100_light200 hidden text-base lg:block">
 						{username}
 					</p>
 				</div>
 				<ChevronDown
 					className={cn(
-						'text-dark100_light200 hidden transition-transform duration-200 md:block',
+						'text-dark100_light200 hidden transition-transform duration-200 lg:block',
 						isOpen ? 'rotate-180' : 'rotate-0'
 					)}
 				/>

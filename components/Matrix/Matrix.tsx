@@ -4,6 +4,8 @@ import TaskForm from '../forms/TaskForm';
 import { Task, TaskPriority } from '@/types/global';
 import { getLocalStorageWithExpiry } from '@/lib/utils';
 import TaskCard from '../cards/TaskCard';
+import { taskStatus } from '@/constants';
+import LimitDeviceFreeTrialDialog from '../LimitDeviceFreeTrialDialog';
 
 interface MatrixProps {
 	priorityType: TaskPriority;
@@ -26,6 +28,7 @@ const Matrix = ({
 	userId,
 }: MatrixProps) => {
 	const [tasks, setTasks] = useState<Task[]>(initialTasks);
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
 	useEffect(() => {
 		// อัปเดต tasks กับ initialTasks เมื่อ component ได้รับการ mount
@@ -56,39 +59,60 @@ const Matrix = ({
 		}
 	}, [isGuest, tasks.length, priorityType]); // เพิ่ม priorityType เป็น dependency
 
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
+
+	const renderContent = () => {
+		if (isGuest && windowWidth < 1024) {
+			return <LimitDeviceFreeTrialDialog />;
+		}
+
+		return (
+			<TaskForm
+				priorityType={priorityType}
+				setTasks={setTasks}
+				currentTasksCount={tasks.length}
+				handleOpenDialog={handleOpenDialog}
+			/>
+		);
+	};
+
 	return (
 		<div
-			className={`relative grid w-fit grid-cols-5 grid-rows-5 ${customBorder}`}
+			className={`bg-light100_dark800 relative w-full rounded-[28px] lg:w-fit ${customBorder} space-y-8 px-4 py-8 sm:max-w-none sm:p-8 md:p-16 lg:space-y-0 lg:rounded-none lg:p-0`}
 		>
-			<p className="pointer-events-none absolute inset-0 flex items-center justify-center text-7xl text-gray-100/50 uppercase">
-				{priorityType}
-			</p>
+			<div className="text-center lg:hidden">
+				<p className="text-3xl sm:text-5xl">{taskStatus[priorityType]}</p>
+			</div>
+			<div className="grid min-h-[311px] min-w-[311px] grid-cols-5 grid-rows-5">
+				{Array.from({ length: 25 }).map((_, i) => (
+					<div
+						key={i}
+						className="bg-light200_dark100 z-10 flex aspect-square items-center justify-center border border-gray-100 lg:size-[100px]"
+					>
+						{i < tasks.length && (
+							<TaskCard
+								priorityType={priorityType}
+								userId={userId || ''}
+								dotColor={dotColor}
+								task={tasks[i]}
+								setTasks={setTasks}
+							/>
+						)}
 
-			{Array.from({ length: 25 }).map((_, i) => (
-				<div
-					key={i}
-					className="z-10 flex size-[100px] items-center justify-center border border-gray-100"
-				>
-					{i < tasks.length && (
-						<TaskCard
-							priorityType={priorityType}
-							userId={userId || ''}
-							dotColor={dotColor}
-							task={tasks[i]}
-							setTasks={setTasks}
-						/>
-					)}
-
-					{i === tasks.length && tasks.length < 25 && (
-						<TaskForm
-							priorityType={priorityType}
-							setTasks={setTasks}
-							currentTasksCount={tasks.length}
-							handleOpenDialog={handleOpenDialog}
-						/>
-					)}
-				</div>
-			))}
+						{i === tasks.length && tasks.length < 25 && renderContent()}
+						<p className="pointer-events-none absolute inset-0 flex items-center justify-center text-5xl text-gray-100/50 uppercase opacity-80 lg:text-7xl">
+							{priorityType}
+						</p>
+					</div>
+				))}
+			</div>
 		</div>
 	);
 };

@@ -55,7 +55,7 @@ const DeleteDialog = ({ id, username }: { id: string; username: string }) => {
 		<Dialog>
 			<DialogTrigger asChild>
 				<Button className="delete-btn w-fit self-end" size="lg">
-					Delete
+					<Trash2Icon /> Delete
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="w-[600px]">
@@ -78,7 +78,7 @@ const DeleteDialog = ({ id, username }: { id: string; username: string }) => {
 						placeholder="Type here to confirm"
 					/>
 				</div>
-				<DialogFooter>
+				<div className="flex justify-end gap-4">
 					<DialogClose asChild>
 						<Button
 							variant="outline"
@@ -96,7 +96,7 @@ const DeleteDialog = ({ id, username }: { id: string; username: string }) => {
 					>
 						<Trash2Icon /> Delete
 					</Button>
-				</DialogFooter>
+				</div>
 			</DialogContent>
 		</Dialog>
 	);

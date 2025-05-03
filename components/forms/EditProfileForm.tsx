@@ -19,6 +19,7 @@ import { useAuth } from '@/context/Auth';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import ROUTES from '@/constants/routes';
+import { PencilIcon } from 'lucide-react';
 
 const EditProfileForm = ({
 	id,
@@ -81,9 +82,9 @@ const EditProfileForm = ({
 				<form onSubmit={form.handleSubmit(handleSubmit)}>
 					<fieldset
 						disabled={form.formState.isSubmitting}
-						className="flex flex-col gap-8"
+						className="flex flex-col gap-4 lg:gap-8"
 					>
-						<div className="flex items-center justify-between gap-12 p-4">
+						<div className="flex flex-col justify-between gap-4 p-4 lg:flex-row lg:items-center lg:gap-12">
 							<h2 className="text-dark100_light200 flex-1">Name</h2>
 							<div className="flex-1">
 								<FormField
@@ -101,7 +102,7 @@ const EditProfileForm = ({
 							</div>
 						</div>
 						<div className="divider" />
-						<div className="flex items-center justify-between gap-12 p-4">
+						<div className="flex flex-col justify-between gap-4 p-4 lg:flex-row lg:items-center lg:gap-12">
 							<h2 className="flex-1">Email</h2>
 							<div className="flex-1">
 								<FormField
@@ -119,7 +120,7 @@ const EditProfileForm = ({
 							</div>
 						</div>
 						<div className="divider" />
-						<div className="flex items-center justify-between gap-12 p-4">
+						<div className="flex flex-col justify-between gap-4 p-4 lg:flex-row lg:items-center lg:gap-12">
 							<h2 className="flex-1">Password</h2>
 							<div className="flex-1 space-y-4">
 								<FormField
@@ -172,7 +173,7 @@ const EditProfileForm = ({
 							type="submit"
 							size="lg"
 						>
-							Update
+							<PencilIcon /> Update
 						</Button>
 					</fieldset>
 				</form>

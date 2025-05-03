@@ -16,8 +16,8 @@ const ProfileDelete = ({
 	const initials = avatarTextGenerate(username);
 	return (
 		<div className="bg-light-100 rounded-[28px] border border-gray-100 p-8 dark:bg-zinc-800">
-			<div className="flex flex-col gap-8">
-				<div className="flex items-center justify-between gap-12 p-4">
+			<div className="flex flex-col gap-4 lg:gap-8">
+				<div className="flex flex-col justify-between gap-4 p-4 lg:flex-row lg:items-center lg:gap-12">
 					<div className="flex-1 space-y-4">
 						<h2 className="text-red-500">Delete Account</h2>
 						<p>

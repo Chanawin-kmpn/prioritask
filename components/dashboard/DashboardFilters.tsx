@@ -65,44 +65,46 @@ const DashboardFilters = ({ filters }: Props) => {
 
 	return (
 		<div className="bg-light100_dark800 max-h- flex items-center gap-16 overflow-y-auto rounded-[28px] border border-gray-100 p-8">
-			<p className="text-dark100_light200 text-2xl font-bold">Filter by:</p>
-			<div className="flex flex-1 items-center gap-8">
-				{Object.entries(filters).map(([key, value]) => (
-					<div key={key}>
-						<p className="text-lg font-bold">
-							{key === 'createdAt'
-								? 'Created at'
-								: key === 'priorityType'
-									? 'Priority type'
-									: 'Task status'}
-						</p>
-						<Select
-							value={selectedFilters[key] || ''}
-							onValueChange={(value) => handleUpdateParmas(key, value)}
-						>
-							<SelectTrigger className="w-[180px]">
-								<SelectValue placeholder="Select a filter" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectGroup>
-									{value.map((item) => (
-										<SelectItem key={item.value} value={item.value}>
-											{item.name}
-										</SelectItem>
-									))}
-								</SelectGroup>
-							</SelectContent>
-						</Select>
-					</div>
-				))}
+			<div className="flex w-full flex-col gap-8 lg:flex-row">
+				<p className="text-dark100_light200 text-2xl font-bold">Filter by:</p>
+				<div className="flex w-full flex-1 flex-col gap-8 lg:flex-row lg:items-center">
+					{Object.entries(filters).map(([key, value]) => (
+						<div key={key} className="w-full">
+							<p className="text-lg font-bold">
+								{key === 'createdAt'
+									? 'Created at'
+									: key === 'priorityType'
+										? 'Priority type'
+										: 'Task status'}
+							</p>
+							<Select
+								value={selectedFilters[key] || ''}
+								onValueChange={(value) => handleUpdateParmas(key, value)}
+							>
+								<SelectTrigger className="w-full lg:w-[180px]">
+									<SelectValue placeholder="Select a filter" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectGroup>
+										{value.map((item) => (
+											<SelectItem key={item.value} value={item.value}>
+												{item.name}
+											</SelectItem>
+										))}
+									</SelectGroup>
+								</SelectContent>
+							</Select>
+						</div>
+					))}
+				</div>
+				<Button
+					onClick={handleClearFilters}
+					className="text-dark100_light200"
+					variant="link"
+				>
+					Clear filters
+				</Button>
 			</div>
-			<Button
-				onClick={handleClearFilters}
-				className="text-dark100_light200"
-				variant="link"
-			>
-				Clear filters
-			</Button>
 		</div>
 	);
 };

@@ -127,7 +127,7 @@ const SummaryTaskChart = ({
 			</div>
 
 			<div>
-				<div className="flex gap-4">
+				<div className="flex flex-wrap justify-center gap-4">
 					{data.map((item, index) => (
 						<div key={index}>
 							<div className="flex items-center gap-2">

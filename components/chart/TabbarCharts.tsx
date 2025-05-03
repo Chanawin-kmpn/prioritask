@@ -45,18 +45,21 @@ const TabbarCharts = ({ chartDataCompletion, chartDataPriority }: Props) => {
 			className="w-full"
 		>
 			<Card className="p-0">
-				<div className="bg-light100_dark800 flex border-b border-gray-100">
+				<div className="bg-light100_dark800 flex flex-col border-b border-gray-100 lg:flex-row">
 					<div className="flex-2 border-r p-8">
 						<CardTitle className="text-3xl">{title}</CardTitle>
 						<CardDescription className="text-xl">{description}</CardDescription>
 					</div>
-					<div className="h-full flex-1 p-8">
-						<TabsList className="h-full">
-							<TabsTrigger className="cursor-pointer text-3xl" value="priority">
+					<div className="h-full flex-1 self-center p-4 lg:p-8">
+						<TabsList className="h-full w-full flex-col items-center lg:flex-row">
+							<TabsTrigger
+								className="w-full cursor-pointer text-3xl"
+								value="priority"
+							>
 								Priority type
 							</TabsTrigger>
 							<TabsTrigger
-								className="cursor-pointer text-3xl"
+								className="w-full cursor-pointer text-3xl"
 								value="completion"
 							>
 								Completion rate

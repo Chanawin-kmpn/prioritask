@@ -34,7 +34,7 @@ const DashboardChart = async () => {
 					/>
 				</div>
 			</div>
-			<div className="flex gap-8 pt-0">
+			<div className="flex flex-col gap-8 pt-0 lg:flex-row">
 				<SummaryTaskChart chartDataPriority={chartDataPriority} />
 				<SummaryTaskCompletionChart chartDataCompletion={chartDataCompletion} />
 			</div>

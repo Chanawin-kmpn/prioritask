@@ -170,7 +170,7 @@ export default function TaskForm({
 			<DialogTrigger asChild>
 				{isEdit ? (
 					<Button className="submit-btn w-fit" size="lg">
-						<PencilIcon /> Edit
+						<PencilIcon /> <span className="hidden lg:block">Edit</span>
 					</Button>
 				) : (
 					<Button variant="outline" className="size-10 rounded-full md:size-12">
@@ -383,7 +383,7 @@ export default function TaskForm({
 							)}
 						/>
 
-						<DialogFooter>
+						<div className="flex justify-end gap-4">
 							<DialogClose asChild>
 								<Button
 									variant="outline"
@@ -412,7 +412,7 @@ export default function TaskForm({
 									</>
 								)}
 							</Button>
-						</DialogFooter>
+						</div>
 					</form>
 				</Form>
 			</DialogContent>

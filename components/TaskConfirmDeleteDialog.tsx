@@ -45,7 +45,7 @@ const TaskConfirmDeleteDialog = ({
 						{contents.note}
 					</span>
 				</DialogHeader>
-				<DialogFooter>
+				<div className="flex justify-end gap-4">
 					<DialogClose asChild>
 						<Button
 							variant="outline"
@@ -75,7 +75,7 @@ const TaskConfirmDeleteDialog = ({
 							</>
 						)}
 					</Button>
-				</DialogFooter>
+				</div>
 			</DialogContent>
 		</Dialog>
 	);

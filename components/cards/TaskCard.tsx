@@ -27,6 +27,8 @@ import TaskConfirmDeleteDialog from '../TaskConfirmDeleteDialog';
 import { deleteTaskFromLocalStorage } from '@/lib/utils';
 import TaskForm from '../forms/TaskForm';
 import { title } from 'process';
+import TaskContentCard from './TaskContentCard';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
 interface TaskCardProps {
 	priorityType: TaskPriority;
@@ -110,92 +112,42 @@ const TaskCard = ({
 	};
 
 	return (
-		<HoverCard openDelay={300}>
-			<HoverCardTrigger asChild>
-				<div className={`size-10 rounded-full md:size-12 ${dotColor} border`} />
-			</HoverCardTrigger>
-			<HoverCardContent className="w-[32rem]">
-				<Card>
-					<CardHeader>
-						<CardTitle className="pointer-events-none text-3xl tracking-[8px] uppercase">
-							Task Detail
-						</CardTitle>
-						<CardDescription>
-							Task information and management options
-						</CardDescription>
-					</CardHeader>
-					<div className="divider" />
-					<CardContent>
-						<p className="text-2xl">{task.name}</p>
-						<p className="text-xl">
-							{task.description ? task.description : '-'}
-						</p>
-					</CardContent>
-					<div className="divider" />
-					<CardContent>
-						<div className="flex items-center gap-2">
-							<p className="text-lg font-bold">Due Date:</p>
-							<span className="uppercase">
-								{dayjs(task.dueDate).format('D MMMM YYYY')}
-							</span>
-						</div>
-						<div className="flex items-center gap-2">
-							<p className="text-lg font-bold">Due Time:</p>
-							<span className="uppercase">
-								{task.dueTime ? task.dueTime : '-'}
-							</span>
-						</div>
-					</CardContent>
-					<div className="divider" />
-					<CardContent className="flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<p className="text-lg font-bold">Priority:</p>
-							<span className="uppercase">{task.priority}</span>
-						</div>
-						<div>
-							<PriorityInfo />
-						</div>
-					</CardContent>
-					<div className="divider" />
-					<CardFooter className="items-center justify-between">
-						<Button
-							size="lg"
-							className="complete-btn w-fit self-end"
-							onClick={handleCompleteTask}
-							disabled={isSubmitting}
-						>
-							{isSubmitting ? (
-								<LoaderCircleIcon className="animate-spin" />
-							) : (
-								<>
-									<CheckIcon />
-									Complete
-								</>
-							)}
-						</Button>
-						<div className="flex items-center justify-center gap-4">
-							<TaskConfirmDeleteDialog
-								handleDeleteTask={handleDeleteTask}
-								isSubmitting={isSubmitting}
-								contents={{
-									title: 'Are you sure to delete this task?',
-									description: `No matter how overwhelming your workload may feel, stay strong!💪
-						Keep tackling each challenge step by step, and you’ll reach your
-						goals in no time!🎯`,
-									note: 'Note: Once you delete this task, it will be permanently removed.',
-								}}
-							/>
-							<TaskForm
-								isEdit={true}
-								priorityType={priorityType}
-								task={task}
-								setTasks={setTasks}
-							/>
-						</div>
-					</CardFooter>
-				</Card>
-			</HoverCardContent>
-		</HoverCard>
+		<>
+			<HoverCard openDelay={300}>
+				<HoverCardTrigger asChild className="hidden lg:block">
+					<div
+						className={`size-10 rounded-full md:size-12 ${dotColor} border`}
+					/>
+				</HoverCardTrigger>
+				<HoverCardContent className="w-[32rem]">
+					<TaskContentCard
+						task={task}
+						handleCompleteTask={handleCompleteTask}
+						handleDeleteTask={handleDeleteTask}
+						isSubmitting={isSubmitting}
+						priorityType={priorityType}
+						setTasks={setTasks}
+					/>
+				</HoverCardContent>
+			</HoverCard>
+			<Popover>
+				<PopoverTrigger className="lg:hidden">
+					<div
+						className={`size-10 rounded-full md:size-12 ${dotColor} border`}
+					/>
+				</PopoverTrigger>
+				<PopoverContent className="w-[22rem] max-w-[32rem]" align="start">
+					<TaskContentCard
+						task={task}
+						handleCompleteTask={handleCompleteTask}
+						handleDeleteTask={handleDeleteTask}
+						isSubmitting={isSubmitting}
+						priorityType={priorityType}
+						setTasks={setTasks}
+					/>
+				</PopoverContent>
+			</Popover>
+		</>
 	);
 };
 

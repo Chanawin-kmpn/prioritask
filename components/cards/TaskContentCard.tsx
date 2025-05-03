@@ -18,7 +18,7 @@ import { Task, TaskPriority } from '@/types/global';
 interface Props {
 	task: Task;
 	handleCompleteTask: () => Promise<void>;
-	isSubmitting: boolean;
+	submitStatus: Record<string, boolean>;
 	handleDeleteTask: () => Promise<void>;
 	priorityType: TaskPriority;
 	setTasks: (prevTask: any) => void;
@@ -27,7 +27,7 @@ interface Props {
 const TaskContentCard = ({
 	task,
 	handleCompleteTask,
-	isSubmitting,
+	submitStatus,
 	handleDeleteTask,
 	priorityType,
 	setTasks,
@@ -76,9 +76,9 @@ const TaskContentCard = ({
 					size="lg"
 					className="complete-btn w-fit self-end"
 					onClick={handleCompleteTask}
-					disabled={isSubmitting}
+					disabled={submitStatus.complete}
 				>
-					{isSubmitting ? (
+					{submitStatus.complete ? (
 						<LoaderCircleIcon className="animate-spin" />
 					) : (
 						<>
@@ -90,7 +90,7 @@ const TaskContentCard = ({
 				<div className="flex items-center justify-center gap-4">
 					<TaskConfirmDeleteDialog
 						handleDeleteTask={handleDeleteTask}
-						isSubmitting={isSubmitting}
+						isSubmitting={submitStatus.delete}
 						contents={{
 							title: 'Are you sure to delete this task?',
 							description: `No matter how overwhelming your workload may feel, stay strong!💪

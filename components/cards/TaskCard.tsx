@@ -45,9 +45,16 @@ const TaskCard = ({
 	userId,
 	setTasks,
 }: TaskCardProps) => {
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [isCompleteSubmitting, setIsCompleteSubmitting] = useState(false);
+	const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
+
+	const submitStatus = {
+		complete: isCompleteSubmitting,
+		delete: isDeleteSubmitting,
+	};
+
 	const handleCompleteTask = async () => {
-		setIsSubmitting(true);
+		setIsCompleteSubmitting(true);
 		if (!task.id) {
 			console.error('Task ID is undefined');
 			return;
@@ -66,7 +73,7 @@ const TaskCard = ({
 				userId,
 			});
 
-			setIsSubmitting(false);
+			setIsCompleteSubmitting(false);
 
 			if (!success) {
 				toast.error('Error', {
@@ -84,7 +91,7 @@ const TaskCard = ({
 	};
 
 	const handleDeleteTask = async () => {
-		setIsSubmitting(true);
+		setIsDeleteSubmitting(true);
 		if (!task.id) {
 			console.error('Task ID is undefined');
 			return;
@@ -95,7 +102,7 @@ const TaskCard = ({
 				userId,
 			});
 
-			setIsSubmitting(false);
+			setIsDeleteSubmitting(false);
 
 			if (!success) {
 				toast.error('Error', {
@@ -124,7 +131,7 @@ const TaskCard = ({
 						task={task}
 						handleCompleteTask={handleCompleteTask}
 						handleDeleteTask={handleDeleteTask}
-						isSubmitting={isSubmitting}
+						submitStatus={submitStatus}
 						priorityType={priorityType}
 						setTasks={setTasks}
 					/>
@@ -141,7 +148,7 @@ const TaskCard = ({
 						task={task}
 						handleCompleteTask={handleCompleteTask}
 						handleDeleteTask={handleDeleteTask}
-						isSubmitting={isSubmitting}
+						submitStatus={submitStatus}
 						priorityType={priorityType}
 						setTasks={setTasks}
 					/>

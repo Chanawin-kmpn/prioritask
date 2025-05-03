@@ -1,7 +1,6 @@
 import React from 'react';
 import { getAllTasksByUser } from '@/lib/actions/task.action';
 import { Task } from '@/types/global';
-import { toast } from 'sonner';
 import Matrix from './Matrix';
 
 interface FilterPriority {

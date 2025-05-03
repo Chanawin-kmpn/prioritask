@@ -1,6 +1,6 @@
-import { auth } from '@/firebase/server';
 import EisenhowerMatrix from '@/components/matrix/EisenhowerMatrix';
 import GuestEisenhowerMatrix from '@/components/matrix/GuestEisenhowerMatrix';
+import { auth } from '@/firebase/server';
 import { cookies } from 'next/headers';
 import { UnauthorizedError } from '@/lib/http-errors';
 

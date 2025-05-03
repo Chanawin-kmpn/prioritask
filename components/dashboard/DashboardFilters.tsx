@@ -48,6 +48,7 @@ const DashboardFilters = ({ filters }: Props) => {
 			params: searchParams.toString(),
 			key,
 			value,
+			isResetPage: true,
 		});
 
 		router.push(newUrl, { scroll: false });

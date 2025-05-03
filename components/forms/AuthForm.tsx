@@ -74,7 +74,7 @@ const AuthForm = <T extends FieldValues>({
 	const titleConfig = formTitles[formType];
 
 	return (
-		<div className="flex flex-col justify-center gap-8 px-8">
+		<div className="flex h-full flex-col items-center justify-center gap-8 px-2 md:px-8">
 			<div className="w-full space-y-2">
 				<Image
 					src="/images/prioritask-logo.png"
@@ -84,7 +84,7 @@ const AuthForm = <T extends FieldValues>({
 					className="mx-auto"
 				/>
 
-				<div className="space-x-4">
+				<div className="space-x-4 max-md:text-center">
 					<h2 className="text-3xl font-bold">{titleConfig.heading}</h2>
 					<div className="space-x-4">
 						<p className="inline text-sm">{titleConfig.prompt}</p>

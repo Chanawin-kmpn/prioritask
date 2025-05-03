@@ -137,8 +137,7 @@ export async function getTaskByFilters(
 	}
 
 	const { page = 1, pageSize = 10 } = params;
-	const skip = (Number(page) - 1) * Number(pageSize);
-	const limit = pageSize;
+
 	const {
 		createdAt: createdAtFilter,
 		priorityStatus,
@@ -178,6 +177,8 @@ export async function getTaskByFilters(
 		}
 
 		// ดึงข้อมูลตาม query
+		const skip = (Number(page) - 1) * Number(pageSize);
+		const limit = pageSize;
 		const tasksData = await query.limit(limit).offset(skip).get();
 		const tasks: Task[] = tasksData.docs.map((data) => ({
 			...(data.data() as Task),

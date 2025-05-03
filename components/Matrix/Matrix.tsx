@@ -27,8 +27,9 @@ const Matrix = ({
 	handleOpenDialog,
 	userId,
 }: MatrixProps) => {
+	const initialWindowWidth = window.innerWidth;
 	const [tasks, setTasks] = useState<Task[]>(initialTasks);
-	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+	const [windowWidth, setWindowWidth] = useState(initialWindowWidth);
 
 	useEffect(() => {
 		// อัปเดต tasks กับ initialTasks เมื่อ component ได้รับการ mount
@@ -85,12 +86,12 @@ const Matrix = ({
 
 	return (
 		<div
-			className={`bg-light100_dark800 relative w-full rounded-[28px] lg:w-fit ${customBorder} space-y-8 px-4 py-8 sm:max-w-none sm:p-8 md:p-16 lg:space-y-0 lg:rounded-none lg:p-0`}
+			className={`bg-light100_dark800 w-full rounded-[28px] lg:w-fit ${customBorder} space-y-8 px-4 py-8 sm:max-w-none sm:p-8 md:p-16 lg:space-y-0 lg:rounded-none lg:p-0`}
 		>
 			<div className="text-center lg:hidden">
 				<p className="text-3xl sm:text-5xl">{taskStatus[priorityType]}</p>
 			</div>
-			<div className="grid min-h-[311px] min-w-[311px] grid-cols-5 grid-rows-5">
+			<div className="relative grid min-h-[311px] min-w-[311px] grid-cols-5 grid-rows-5">
 				{Array.from({ length: 25 }).map((_, i) => (
 					<div
 						key={i}
@@ -107,7 +108,7 @@ const Matrix = ({
 						)}
 
 						{i === tasks.length && tasks.length < 25 && renderContent()}
-						<p className="pointer-events-none absolute inset-0 flex items-center justify-center text-5xl text-gray-100/50 uppercase opacity-80 lg:text-7xl">
+						<p className="pointer-events-none absolute inset-0 flex items-center justify-center text-5xl text-gray-100/50 uppercase opacity-80 sm:text-7xl">
 							{priorityType}
 						</p>
 					</div>

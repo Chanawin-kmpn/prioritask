@@ -3,6 +3,8 @@
 import { auth } from '@/firebase/server';
 import { cookies } from 'next/headers';
 import { UnauthorizedError } from '@/lib/http-errors';
+import EisenhowerMatrix from '@/components/matrix/EisenhowerMatrix';
+import GuestEisenhowerMatrix from '@/components/matrix/GuestEisenhowerMatrix';
 
 export default async function Home() {
 	const cookieStore = await cookies();
@@ -13,7 +15,7 @@ export default async function Home() {
 		// ถ้าไม่มี session cookie ให้ return GuestEisenhowerMatrix
 		return (
 			<div className="bg-light200_dark100 flex h-full justify-center py-32">
-				{/* <GuestEisenhowerMatrix /> */}
+				<GuestEisenhowerMatrix />
 			</div>
 		);
 	}
@@ -67,7 +69,7 @@ export default async function Home() {
 
 	return (
 		<div className="bg-light200_dark100 flex h-full justify-center py-32">
-			{/* <EisenhowerMatrix userId={userId!} /> */}
+			<EisenhowerMatrix userId={userId!} />
 		</div>
 	);
 }

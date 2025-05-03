@@ -27,9 +27,8 @@ const Matrix = ({
 	handleOpenDialog,
 	userId,
 }: MatrixProps) => {
-	const initialWindowWidth = window.innerWidth;
 	const [tasks, setTasks] = useState<Task[]>(initialTasks);
-	const [windowWidth, setWindowWidth] = useState(initialWindowWidth);
+	const [windowWidth, setWindowWidth] = useState(1024);
 
 	useEffect(() => {
 		// อัปเดต tasks กับ initialTasks เมื่อ component ได้รับการ mount

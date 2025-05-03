@@ -1,8 +1,8 @@
 import { auth } from '@/firebase/server';
 import { cookies } from 'next/headers';
 import { UnauthorizedError } from '@/lib/http-errors';
-import EisenhowerMatrix from '@/components/matrix/EisenhowerMatrix';
-import GuestEisenhowerMatrix from '@/components/matrix/GuestEisenhowerMatrix';
+import EisenhowerMatrix from '@/components/matrixs/EisenhowerMatrix';
+import GuestEisenhowerMatrix from '@/components/matrixs/GuestEisenhowerMatrix';
 
 export default async function Home() {
 	const cookieStore = await cookies();

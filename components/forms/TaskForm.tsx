@@ -179,7 +179,7 @@ export default function TaskForm({
 				)}
 			</DialogTrigger>
 
-			<DialogContent className="gap-8 px-8 py-16">
+			<DialogContent className="gap-4 px-8 py-16 lg:gap-8">
 				<DialogHeader>
 					<DialogTitle className="pointer-events-none tracking-[8px] uppercase">
 						{isEdit ? 'Edit Task' : 'Create Task'}
@@ -194,7 +194,10 @@ export default function TaskForm({
 				<div className="divider" />
 
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+					<form
+						onSubmit={form.handleSubmit(onSubmit)}
+						className="space-y-4 lg:space-y-8"
+					>
 						<div className="space-y-4">
 							<p className="">Task Detail</p>
 							{/* Task Name */}

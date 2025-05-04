@@ -90,7 +90,7 @@ const Matrix = ({
 			<div className="text-center lg:hidden">
 				<p className="text-3xl sm:text-5xl">{taskStatus[priorityType]}</p>
 			</div>
-			<div className="relative grid min-h-[311px] min-w-[311px] grid-cols-5 grid-rows-5">
+			<div className="relative grid min-h-[296px] min-w-[296px] grid-cols-5 grid-rows-5">
 				{Array.from({ length: 25 }).map((_, i) => (
 					<div
 						key={i}

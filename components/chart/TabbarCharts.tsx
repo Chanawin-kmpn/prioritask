@@ -46,7 +46,7 @@ const TabbarCharts = ({ chartDataCompletion, chartDataPriority }: Props) => {
 		>
 			<Card className="p-0">
 				<div className="bg-light100_dark800 flex flex-col border-b border-gray-100 lg:flex-row">
-					<div className="flex-2 border-r p-8">
+					<div className="flex-2 p-8 lg:border-r">
 						<CardTitle className="text-3xl">{title}</CardTitle>
 						<CardDescription className="text-xl">{description}</CardDescription>
 					</div>
@@ -67,7 +67,7 @@ const TabbarCharts = ({ chartDataCompletion, chartDataPriority }: Props) => {
 						</TabsList>
 					</div>
 				</div>
-				<CardContent className="p-8">
+				<CardContent className="p-4 lg:p-8">
 					<TabsContent value="priority">
 						<ChartContainer
 							config={chartDataPriorityConfig}

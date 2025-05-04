@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/Auth';
 import ROUTES from '@/constants/routes';
 import UserAvatar from './UserAvatar';
+import { LogIn } from 'lucide-react';
 
 const Navbar = () => {
 	const auth = useAuth();
@@ -29,8 +30,11 @@ const Navbar = () => {
 						href={ROUTES.SIGN_IN}
 						className="pr-4 font-bold tracking-[8px] uppercase lg:p-0"
 					>
-						<span className="absolute inset-0"></span>
-						Sign In
+						<span className="lg:absolute lg:inset-0"></span>
+						<span className="lg:hidden">
+							<LogIn />
+						</span>
+						<span className="hidden lg:block">Sign In</span>
 					</Link>
 				) : (
 					<UserAvatar user={user} />

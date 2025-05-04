@@ -62,7 +62,7 @@ const EmptyData = ({ emptyType }: { emptyType: string }) => {
 			<StateSkeleton
 				image={{
 					light: '/images/add-new-task-light.png',
-					dark: '/images/add-new-task-dark.png',
+					dark: '/images/add-new-task-light.png',
 					alt: 'Empty task state',
 				}}
 				title={EMPTY_TASK.title}

@@ -61,7 +61,13 @@ const AuthForm = <T extends FieldValues>({
 					});
 					window.location.href = ROUTES.HOME;
 				} else {
-					toast.error(response?.error?.message);
+					toast.error('Something went wrong!', {
+						description: response?.error?.message.includes(
+							'auth/invalid-credential'
+						)
+							? 'Invalid email or password'
+							: response?.error?.message,
+					});
 				}
 			} else {
 				toast.error(`Error ${result?.status}`, {

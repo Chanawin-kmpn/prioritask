@@ -41,7 +41,7 @@ const page = async ({ searchParams }: RouteParams) => {
 	const { isNext } = data || {};
 	return (
 		<Suspense fallback={<Loading />}>
-			<div className="space-y-8 px-4 py-32 sm:px-8">
+			<div className="space-y-8 px-4 py-16 sm:px-8 lg:py-32">
 				<h1 className="text-dark100_light200">Dashboard</h1>
 				<div className="space-y-8">
 					<DashboardFilters filters={dashboardFilters} />

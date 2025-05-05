@@ -177,11 +177,11 @@
 }
 
 h1 {
-	@apply text-7xl;
+	@apply text-6xl lg:text-7xl;
 }
 
 h2 {
-	@apply text-3xl font-bold;
+	@apply text-xl font-bold lg:text-3xl;
 }
 
 input[type='time']::-webkit-calendar-picker-indicator {

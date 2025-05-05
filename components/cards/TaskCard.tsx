@@ -143,7 +143,7 @@ const TaskCard = ({
 						className={`size-10 rounded-full md:size-12 ${dotColor} border`}
 					/>
 				</PopoverTrigger>
-				<PopoverContent className="w-[22rem] max-w-[32rem]" align="start">
+				<PopoverContent className="w-[21rem] max-w-[32rem]" align="start">
 					<TaskContentCard
 						task={task}
 						handleCompleteTask={handleCompleteTask}

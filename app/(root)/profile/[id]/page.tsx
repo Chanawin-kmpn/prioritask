@@ -25,7 +25,7 @@ const ProfilePage = async ({ params }: RouteParams) => {
 
 	return (
 		<Suspense fallback={<Loading />}>
-			<div className="space-y-8 px-4 py-32 sm:px-8">
+			<div className="space-y-8 px-4 py-16 sm:px-8 lg:py-32">
 				<h1 className="text-dark100_light200">Account</h1>
 				<div className="space-y-8">
 					<ProfileDetail

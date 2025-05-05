@@ -25,7 +25,7 @@ const SocialAuthForm = ({ title }: { title: string }) => {
 				className="text-dark100_light200 hover:bg-dark-100 hover:text-light-200 dark:hover:bg-light-200 dark:hover:text-dark-100 flex w-full items-center justify-center rounded-md py-4 text-base"
 				onClick={handleLoginWithGoogle}
 			>
-				{title}
+				<span className="hidden lg:block">{title}</span>
 				<Image
 					src="/icons/google.svg"
 					width={16}

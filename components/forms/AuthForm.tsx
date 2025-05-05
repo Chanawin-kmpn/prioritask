@@ -80,7 +80,7 @@ const AuthForm = <T extends FieldValues>({
 	const titleConfig = formTitles[formType];
 
 	return (
-		<div className="flex h-full flex-col items-center justify-center gap-8 px-2 md:px-8">
+		<div className="flex h-full flex-col items-center justify-center gap-4 py-4 md:px-8 lg:gap-8 lg:py-0">
 			<div className="w-full space-y-2">
 				<Image
 					src="/images/prioritask-logo.png"
@@ -90,13 +90,13 @@ const AuthForm = <T extends FieldValues>({
 					className="mx-auto"
 				/>
 
-				<div className="space-x-4 max-md:text-center">
-					<h2 className="text-3xl font-bold">{titleConfig.heading}</h2>
+				<div className="max-md:text-center lg:space-x-4">
+					<h2>{titleConfig.heading}</h2>
 					<div className="space-x-4">
 						<p className="inline text-sm">{titleConfig.prompt}</p>
 						<Link
 							href={titleConfig.linkHref}
-							className="text-dark100_light200 text-lg font-bold underline"
+							className="text-dark100_light200 text-base font-bold underline lg:text-lg"
 						>
 							{titleConfig.linkText}
 						</Link>
@@ -163,17 +163,17 @@ const AuthForm = <T extends FieldValues>({
 								</Link>
 							</div>
 						)}
-						<div className="mt-4">
+						<div className="mt-4 flex gap-4 lg:block">
 							<Button
 								type="submit"
 								size="lg"
-								className="submit-btn"
+								className="submit-btn flex-1 lg:w-full"
 								disabled={isLoading}
 							>
 								{titleConfig.submitBtn}
 							</Button>
 
-							<div className="my-[17px] flex items-center justify-center">
+							<div className="my-[17px] hidden items-center justify-center lg:flex">
 								<div className="divider"></div>
 								<span className="px-4 text-base text-gray-100">Or</span>
 								<div className="divider"></div>

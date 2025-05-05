@@ -4,7 +4,7 @@ import React, { ReactNode } from 'react';
 const layout = ({ children }: { children: ReactNode }) => {
 	return (
 		<div className="flex min-h-screen items-center justify-center">
-			<div className="mx-8 flex min-h-[772px] w-4xl rounded-[28px] bg-zinc-200 p-4 dark:bg-zinc-800">
+			<div className="mx-8 flex w-4xl rounded-[28px] bg-zinc-200 p-4 lg:min-h-[772px] dark:bg-zinc-800">
 				<section className="relative hidden w-1/2 overflow-hidden rounded-l-[12px] md:block">
 					<Image
 						src="/images/light-auth-banner.png"

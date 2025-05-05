@@ -14,10 +14,10 @@ const Loading = () => {
 					</span>
 				</div>
 				<div className="grid w-full grid-cols-1 justify-center gap-8 lg:grid lg:w-fit lg:grid-cols-2 lg:gap-0">
-					<Skeleton className="min-h-[497px] min-w-[397px] rounded-[28px] sm:h-[688px] sm:max-w-none sm:p-8 md:h-[816px] md:p-16 lg:size-[501.82px] lg:space-y-0 lg:rounded-none lg:p-0" />
-					<Skeleton className="min-h-[497px] min-w-[397px] rounded-[28px] sm:h-[688px] sm:max-w-none sm:p-8 md:h-[816px] md:p-16 lg:size-[501.82px] lg:space-y-0 lg:rounded-none lg:p-0" />
-					<Skeleton className="min-h-[497px] min-w-[397px] rounded-[28px] sm:h-[688px] sm:max-w-none sm:p-8 md:h-[816px] md:p-16 lg:size-[501.82px] lg:space-y-0 lg:rounded-none lg:p-0" />
-					<Skeleton className="min-h-[497px] min-w-[397px] rounded-[28px] sm:h-[688px] sm:max-w-none sm:p-8 md:h-[816px] md:p-16 lg:size-[501.82px] lg:space-y-0 lg:rounded-none lg:p-0" />
+					<Skeleton className="min-h-[430px] min-w-[328px] rounded-[28px] sm:h-[688px] sm:max-w-none sm:p-8 md:h-[816px] md:p-16 lg:size-[501.82px] lg:space-y-0 lg:rounded-none lg:p-0" />
+					<Skeleton className="min-h-[430px] min-w-[328px] rounded-[28px] sm:h-[688px] sm:max-w-none sm:p-8 md:h-[816px] md:p-16 lg:size-[501.82px] lg:space-y-0 lg:rounded-none lg:p-0" />
+					<Skeleton className="min-h-[430px] min-w-[328px] rounded-[28px] sm:h-[688px] sm:max-w-none sm:p-8 md:h-[816px] md:p-16 lg:size-[501.82px] lg:space-y-0 lg:rounded-none lg:p-0" />
+					<Skeleton className="min-h-[430px] min-w-[328px] rounded-[28px] sm:h-[688px] sm:max-w-none sm:p-8 md:h-[816px] md:p-16 lg:size-[501.82px] lg:space-y-0 lg:rounded-none lg:p-0" />
 				</div>
 				<div className="absolute bottom-0 left-0 hidden w-full max-w-[1000px] origin-top-left -rotate-90 text-center lg:flex">
 					<span className="text-dark-100 dark:text-light-100 pointer-events-none flex-1 text-5xl">

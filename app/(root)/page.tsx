@@ -12,7 +12,7 @@ export default async function Home() {
 	if (!sessionCookie) {
 		// ถ้าไม่มี session cookie ให้ return GuestEisenhowerMatrix
 		return (
-			<div className="bg-light200_dark100 flex h-full justify-center py-32">
+			<div className="bg-light200_dark100 flex h-full justify-center py-16 lg:py-32">
 				<GuestEisenhowerMatrix />
 			</div>
 		);
@@ -66,7 +66,7 @@ export default async function Home() {
 	//รับข้อมูลผู้ใช้
 
 	return (
-		<div className="bg-light200_dark100 flex h-full justify-center py-32">
+		<div className="bg-light200_dark100 flex h-full justify-center py-16 lg:py-32">
 			<EisenhowerMatrix userId={userId!} />
 		</div>
 	);

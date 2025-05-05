@@ -5,28 +5,15 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from '../ui/hover-card';
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
+
 import { Task, TaskPriority } from '@/types/global';
-import dayjs from 'dayjs';
-import { CheckIcon, LoaderCircleIcon } from 'lucide-react';
-import PriorityInfo from '../PriorityInfo';
-import { Button } from '../ui/button';
+
 import {
 	deleteTaskByTaskId,
 	setTaskToComplete,
 } from '@/lib/actions/task.action';
 import { toast } from 'sonner';
-import TaskConfirmDeleteDialog from '../TaskConfirmDeleteDialog';
 import { deleteTaskFromLocalStorage } from '@/lib/utils';
-import TaskForm from '../forms/TaskForm';
-import { title } from 'process';
 import TaskContentCard from './TaskContentCard';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 

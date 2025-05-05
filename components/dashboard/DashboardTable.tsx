@@ -1,7 +1,7 @@
 'use client';
 import { deleteTaskFromDashboard } from '@/lib/actions/task.action';
 import { Task } from '@/types/global';
-import React from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 import {
 	Table,
@@ -17,8 +17,10 @@ import { taskPriorityBadge, taskStatusBadge } from '@/constants';
 import TaskConfirmDeleteDialog from '../TaskConfirmDeleteDialog';
 
 const DashboardTable = ({ data }: { data: Task[] }) => {
+	const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
 	// ฟังก์ชันนี้จะทำการลบ Task
 	const handleDeleteTask = async (taskId: string) => {
+		setIsDeleteSubmitting(true);
 		const { success, error } = await deleteTaskFromDashboard({
 			taskId,
 		});
@@ -30,6 +32,7 @@ const DashboardTable = ({ data }: { data: Task[] }) => {
 			return;
 		}
 
+		setIsDeleteSubmitting(false);
 		toast.success('Task deleted successfully!', {
 			description: '🎯 One less thing to worry about—keep moving forward!',
 		});
@@ -86,6 +89,7 @@ const DashboardTable = ({ data }: { data: Task[] }) => {
 											'This data will be automatically deleted after 30 days. Do you want to delete it now?',
 										note: 'Note: Deleting a task from Dashboard is permanent and cannot be undone',
 									}}
+									isSubmitting={isDeleteSubmitting}
 								/>
 							</TableCell>
 						</TableRow>

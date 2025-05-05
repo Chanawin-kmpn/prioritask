@@ -65,11 +65,11 @@ const DashboardFilters = ({ filters }: Props) => {
 
 	return (
 		<div className="bg-light100_dark800 max-h- flex items-center gap-16 overflow-y-auto rounded-[28px] border border-gray-100 p-8">
-			<div className="flex w-full flex-col gap-8 lg:flex-row">
+			<div className="flex w-full flex-col items-center gap-8 lg:flex-row">
 				<p className="text-dark100_light200 text-2xl font-bold">Filter by:</p>
-				<div className="flex w-full flex-1 flex-col gap-8 lg:flex-row lg:items-center">
+				<div className="flex w-full flex-1 flex-col gap-8 lg:flex-row lg:items-center lg:justify-start">
 					{Object.entries(filters).map(([key, value]) => (
-						<div key={key} className="w-full">
+						<div key={key} className="w-full lg:w-[180px]">
 							<p className="text-lg font-bold">
 								{key === 'createdAt'
 									? 'Created at'
@@ -81,7 +81,7 @@ const DashboardFilters = ({ filters }: Props) => {
 								value={selectedFilters[key] || ''}
 								onValueChange={(value) => handleUpdateParmas(key, value)}
 							>
-								<SelectTrigger className="w-full lg:w-[180px]">
+								<SelectTrigger className="w-full">
 									<SelectValue placeholder="Select a filter" />
 								</SelectTrigger>
 								<SelectContent>

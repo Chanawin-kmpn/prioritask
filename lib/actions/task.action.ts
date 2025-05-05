@@ -329,9 +329,6 @@ export async function getAllTasksByUser(): Promise<ActionResponse<Task[]>> {
 		});
 
 		const updatedTasks = await Promise.all(updatePromises); // รอให้การอัปเดตเสร็จสิ้น
-		// นับจำนวน Task ที่ตรงตามเงื่อนไขฟิลเตอร์
-		const totalTasksSnapshot = await query.get(); // ใช้ query เดียวกันเพื่อดึงจำนวนเอกสารทั้งหมด
-		const totalTasks = totalTasksSnapshot.size; // นับจำนวน Task ที่ตรงตามฟิลเตอร์
 
 		const normalizeTask = await normalize(updatedTasks);
 

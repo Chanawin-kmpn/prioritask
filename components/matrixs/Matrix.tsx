@@ -2,7 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import TaskForm from '../forms/TaskForm';
 import { Task, TaskPriority } from '@/types/global';
-import { getLocalStorageWithExpiry } from '@/lib/utils';
+import {
+	deleteTaskFromLocalStorage,
+	getLocalStorageWithExpiry,
+} from '@/lib/utils';
 import TaskCard from '../cards/TaskCard';
 import { taskStatus } from '@/constants';
 import LimitDeviceFreeTrialDialog from '../LimitDeviceFreeTrialDialog';
@@ -43,19 +46,41 @@ const Matrix = ({
 			const currentDate = new Date();
 			// กรอง guestTasks โดย priorityType
 			const filteredGuestTasks = guestTasks.filter((task: Task) => {
-				const isDueDateValid = new Date(task.dueDate) >= currentDate;
-				if (!isDueDateValid) {
-					return false;
-				}
 				return task.priority === priorityType;
 			});
-			const validTasks = guestTasks.filter(
-				(task: Task) => new Date(task.dueDate) >= currentDate
+			// const validTasks = guestTasks.filter(
+			// 	(task: Task) => new Date(task.dueDate) >= currentDate
+			// );
+			const validTasks = Promise.all(
+				guestTasks.map(async (task: Task) => {
+					const dueDate = new Date(task.dueDate);
+					const dueTime = task.dueTime
+						? new Date(
+								dueDate.setHours(
+									Number(task.dueTime.split(':')[0]),
+									Number(task.dueTime.split(':')[1])
+								)
+							)
+						: new Date(dueDate.setHours(23, 59));
+
+					if (dueTime <= currentDate && task.status === 'on-progress') {
+						deleteTaskFromLocalStorage(task.id);
+						return null; // ถ้าลบ task แล้ว ให้ส่ง null กลับมา
+					}
+
+					return task; // ส่ง task กลับมา
+				})
 			);
-			localStorage.setItem('guestTasks', JSON.stringify(validTasks)); // เซฟค่าใหม่กลับไปที่ localStorage
-			setTasks(
-				filteredGuestTasks.filter((task: Task) => task.status === 'on-progress')
-			); // อัปเดตสถานะ tasks ด้วย guestTasks ที่ถูกกรอง
+
+			validTasks.then((tasks) => {
+				const finalTasks = tasks.filter((task) => task !== null);
+				localStorage.setItem('guestTasks', JSON.stringify(finalTasks)); // เซฟค่าใหม่กลับไปที่ localStorage
+				setTasks(
+					filteredGuestTasks.filter(
+						(task: Task) => task.status === 'on-progress'
+					)
+				); // อัปเดตสถานะ tasks ด้วย guestTasks ที่ถูกกรอง
+			});
 		}
 	}, [isGuest, tasks.length, priorityType]); // เพิ่ม priorityType เป็น dependency
 

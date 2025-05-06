@@ -24,21 +24,32 @@ const Navbar = () => {
 					/>
 				</Link>
 			</div>
-			<div className="border-dark-100 dark:border-light-200 bg-light200_dark100 flex items-center justify-center border-b lg:relative lg:min-w-[300px] lg:border-l">
-				{!user ? (
+			<div className="flex gap-16 border-b">
+				<div className="self-center">
 					<Link
-						href={ROUTES.SIGN_IN}
-						className="pr-4 font-bold tracking-[8px] uppercase lg:p-0"
+						className="hover:underline"
+						href="https://asana.com/resources/eisenhower-matrix"
 					>
-						<span className="lg:absolute lg:inset-0"></span>
-						<span className="lg:hidden">
-							<LogIn />
-						</span>
-						<span className="hidden lg:block">Sign In</span>
+						What is it?
 					</Link>
-				) : (
-					<UserAvatar user={user} />
-				)}
+				</div>
+				<div className="border-dark-100 dark:border-light-200 bg-light200_dark100 flex items-center justify-center lg:relative lg:min-w-[300px] lg:border-l">
+					{!user ? (
+						<Link
+							href={ROUTES.SIGN_IN}
+							className="pr-4 font-bold tracking-[8px] uppercase lg:p-0"
+							aria-label="Sign in Button"
+						>
+							<span className="lg:absolute lg:inset-0"></span>
+							<span className="lg:hidden">
+								<LogIn />
+							</span>
+							<span className="hidden lg:block">Sign In</span>
+						</Link>
+					) : (
+						<UserAvatar user={user} />
+					)}
+				</div>
 			</div>
 		</nav>
 	);

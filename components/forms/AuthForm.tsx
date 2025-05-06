@@ -21,7 +21,6 @@ import { formTitles } from '@/constants';
 import { Label } from '@radix-ui/react-label';
 import { Checkbox } from '../ui/checkbox';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 import ROUTES from '@/constants/routes';
 import { useAuth } from '@/context/Auth';
 import { ActionResponse } from '@/types/global';

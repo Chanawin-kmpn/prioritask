@@ -1,12 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
-import {
-	ChartConfig,
-	ChartContainer,
-	ChartTooltip,
-	ChartTooltipContent,
-} from '../ui/chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 import { ChartDataCompletion, ChartDataPriority } from '@/types/global';
 import {
 	chartDataCompletionConfig,

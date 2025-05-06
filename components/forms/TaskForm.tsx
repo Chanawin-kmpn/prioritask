@@ -173,7 +173,11 @@ export default function TaskForm({
 						<PencilIcon /> <span className="hidden lg:block">Edit</span>
 					</Button>
 				) : (
-					<Button variant="outline" className="size-10 rounded-full md:size-12">
+					<Button
+						variant="outline"
+						className="size-10 rounded-full md:size-12"
+						aria-label="Add Task Button"
+					>
 						<Plus />
 					</Button>
 				)}

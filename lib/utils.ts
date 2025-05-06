@@ -1,6 +1,5 @@
 import {
 	ActionType,
-	ChartData,
 	ChartDataCompletion,
 	ChartDataPriority,
 	Task,

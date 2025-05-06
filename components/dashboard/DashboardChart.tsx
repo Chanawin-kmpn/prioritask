@@ -1,4 +1,4 @@
-import { ChartDataCompletion, ChartDataPriority, Task } from '@/types/global';
+import { ChartDataCompletion, ChartDataPriority } from '@/types/global';
 import React from 'react';
 import TabbarCharts from '../chart/TabbarCharts';
 import { chartDataGenerater } from '@/lib/utils';

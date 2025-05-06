@@ -4,10 +4,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { avatarTextGenerate, cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
-import Link from 'next/link';
 import DropdownMenu from './DropdownMenu';
 import { useAuth } from '@/context/Auth';
-import ROUTES from '@/constants/routes';
 import { User } from 'firebase/auth';
 
 interface UserAvatarProps {

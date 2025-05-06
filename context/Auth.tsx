@@ -8,7 +8,6 @@ import {
 } from '@/lib/actions/auth.action';
 import { rateLimitCheck } from '@/lib/utils';
 import { ActionResponse, ErrorResponse } from '@/types/global';
-import { FieldValue } from 'firebase-admin/firestore';
 import {
 	EmailAuthProvider,
 	GoogleAuthProvider,
@@ -17,7 +16,6 @@ import {
 	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
 	signInWithPopup,
-	updateEmail,
 	updatePassword,
 	updateProfile,
 	User,

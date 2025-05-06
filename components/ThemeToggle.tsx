@@ -2,7 +2,6 @@ import { Label } from '@radix-ui/react-label';
 import { useTheme } from 'next-themes';
 import React, { useEffect, useState } from 'react';
 import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
-import { toast } from 'sonner';
 
 const ThemeToggle = () => {
 	const [mounted, setMounted] = useState(false);

@@ -183,7 +183,7 @@ export default function TaskForm({
 				)}
 			</DialogTrigger>
 
-			<DialogContent className="gap-4 px-8 py-16 lg:gap-8">
+			<DialogContent className="gap-4 px-4 py-8 xl:gap-8 xl:px-8 xl:py-16">
 				<DialogHeader>
 					<DialogTitle className="pointer-events-none tracking-[8px] uppercase">
 						{isEdit ? 'Edit Task' : 'Create Task'}

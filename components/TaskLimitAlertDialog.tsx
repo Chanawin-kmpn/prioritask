@@ -33,6 +33,10 @@ const TaskLimitAlertDialog = ({
 				<AlertDialogHeader>
 					<AlertDialogTitle>✋ Trial Limit Reached!</AlertDialogTitle>
 					<AlertDialogDescription className="text-lg">
+						Sign in now to use all Prioritask features for{' '}
+						<span className="text-safe">FREE.</span>
+					</AlertDialogDescription>
+					<AlertDialogDescription className="text-base">
 						Each quadrant in the trial version allows only 5 tasks:
 					</AlertDialogDescription>
 				</AlertDialogHeader>
